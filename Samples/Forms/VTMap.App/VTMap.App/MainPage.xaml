@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" 
+             xmlns:vtmapview="clr-namespace:VTMap.View;assembly=VTMap.View.Forms"
+             x:Class="VTMap.App.MainPage">
+
+    <StackLayout HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand">
+        <Frame BackgroundColor="#2196F3" Padding="24" CornerRadius="0" HorizontalOptions="FillAndExpand">
+            <Label Text="Welcome to VTMap!" HorizontalTextAlignment="Center" TextColor="White" FontSize="36"/>
+        </Frame>
+        <vtmapview:VTMapView HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand" Margin="10" WidthRequest="600" HeightRequest="600"/>
+    </StackLayout>
+
+</ContentPage>
