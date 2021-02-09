@@ -48,6 +48,7 @@ namespace VTMap.Core.Events
 
         public event EventHandler<TouchEventArgs> TouchDown;
         public event EventHandler<TouchEventArgs> TouchUp;
+        public event EventHandler<TouchEventArgs> TouchMove;
         public event EventHandler<TapEventArgs> Tapping;
         public event EventHandler<TapEventArgs> SingleTapped;
         public event EventHandler<TapEventArgs> DoubleTapped;
@@ -71,6 +72,8 @@ namespace VTMap.Core.Events
                     System.Diagnostics.Debug.WriteLine($"Entered {e.Id} at {e.Location.X}/{e.Location.Y}");
                     break;
                 case TouchActionType.Pressed:
+                    if (HandleDown(e))
+                        return;
                     SaveTouch(e);
                     if (_touchDictionary.Count == 1)
                     {
@@ -93,9 +96,10 @@ namespace VTMap.Core.Events
                         _rotation = 0;
                         _scale = 1;
                     }
-                    HandleDown(e);
                     break;
                 case TouchActionType.Moved:
+                    if (HandleMove(e))
+                        return;
                     // Was there already a pressed action for this?
                     if (!_touchDictionary.ContainsKey(e.Id))
                     {
@@ -114,6 +118,8 @@ namespace VTMap.Core.Events
                     info.PreviousPoint = info.NewPoint;
                     break;
                 case TouchActionType.Released:
+                    if (HandleUp(e))
+                        return;
                     // Was there already a pressed action for this?
                     if (!_touchDictionary.ContainsKey(e.Id))
                     {
@@ -124,7 +130,6 @@ namespace VTMap.Core.Events
                     DetectTapGestures(e.Id);
                     DetectPinchAndPanGestures(e.Id, e.ActionType);
                     _touchDictionary.Remove(e.Id);
-                    HandleUp(e);
                     break;
                 case TouchActionType.Cancelled:
                     if (!_touchDictionary.ContainsKey(e.Id))
@@ -150,16 +155,28 @@ namespace VTMap.Core.Events
             e.Handled = true;
         }
 
-        public void HandleDown(TouchEventArgs e)
+        public bool HandleDown(TouchEventArgs e)
         {
             System.Diagnostics.Debug.WriteLine($"Pressed {e.Id} {e.MouseButton} at {e.Location.X}/{e.Location.Y}");
             TouchDown?.Invoke(this, e);
+
+            return e.Handled;
         }
 
-        public void HandleUp(TouchEventArgs e)
+        public bool HandleUp(TouchEventArgs e)
         {
             System.Diagnostics.Debug.WriteLine($"Released {e.Id} {e.MouseButton} at {e.Location.X}/{e.Location.Y}");
             TouchUp?.Invoke(this, e);
+
+            return e.Handled;
+        }
+
+        public bool HandleMove(TouchEventArgs e)
+        {
+            System.Diagnostics.Debug.WriteLine($"Pressed {e.Id} {e.MouseButton} at {e.Location.X}/{e.Location.Y}");
+            TouchMove?.Invoke(this, e);
+
+            return e.Handled;
         }
 
         // Unsure tapping event. Could become a double tap
@@ -327,7 +344,7 @@ namespace VTMap.Core.Events
                     _rotation += PI2;
                 _scale *= scale;
                 // Pinching
-                var args = new PinchEventArgs(prevPoint, newPoint, pivotPoint, newMidPoint, translation, newAngle - oldAngle, scale, touchActionType);
+                var args = new PinchEventArgs(prevPoint, newPoint, pivotPoint, newMidPoint, translation, (float)((newAngle - oldAngle)*180/Math.PI), scale, touchActionType);
                 if (touchActionType == TouchActionType.Moved)
                     HandlePinching(args);
                 else

@@ -6,9 +6,13 @@
 
     <StackLayout HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand">
         <Frame BackgroundColor="#2196F3" Padding="24" CornerRadius="0" HorizontalOptions="FillAndExpand">
-            <Label Text="Welcome to VTMap!" HorizontalTextAlignment="Center" TextColor="White" FontSize="36"/>
+            <StackLayout Orientation="Vertical">
+                <Label x:Name="labelPosition" Text="Position" HorizontalTextAlignment="Center" TextColor="White" FontSize="16"/>
+                <Label x:Name="labelCenter" Text="Center" HorizontalTextAlignment="Center" TextColor="White" FontSize="16"/>
+                <Label x:Name="labelScale" Text="Scale" HorizontalTextAlignment="Center" TextColor="White" FontSize="16"/>
+            </StackLayout>
         </Frame>
-        <vtmapview:VTMapView HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand" Margin="10" WidthRequest="600" HeightRequest="600"/>
+        <vtmapview:VTMapView x:Name="mapView" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand" Margin="10" WidthRequest="600" HeightRequest="600"/>
     </StackLayout>
 
 </ContentPage>

@@ -21,6 +21,7 @@ namespace VTMap.Core.Events
 
         event EventHandler<TouchEventArgs> TouchDown;
         event EventHandler<TouchEventArgs> TouchUp;
+        event EventHandler<TouchEventArgs> TouchMove;
         event EventHandler<TapEventArgs> Tapping;
         event EventHandler<TapEventArgs> SingleTapped;
         event EventHandler<TapEventArgs> DoubleTapped;

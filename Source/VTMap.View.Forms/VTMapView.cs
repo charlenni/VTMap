@@ -10,6 +10,7 @@ namespace VTMap.View
     {
         public VTMapView()
         {
+            var dpi = this.
             TouchEventHandler = new TouchEventHandler();
 
             InternalInit();
@@ -19,6 +20,7 @@ namespace VTMap.View
             // Events
             EnableTouchEvents = true;
             Touch += OnTouch;
+            SizeChanged += OnSizeChanged;
         }
 
         void OnTouch(object sender, SKTouchEventArgs e)
@@ -41,9 +43,17 @@ namespace VTMap.View
             Draw(canvas);
         }
 
-        void Redraw()
+        void RunOnMainThread(Action action)
         {
-            Device.BeginInvokeOnMainThread(() => InvalidateSurface());
+            Device.BeginInvokeOnMainThread(() => action());
+        }
+
+        float GetPixelDensity()
+        {
+            if (Width <= 0) 
+                return 0;
+
+            return (float)(CanvasSize.Width / Width);
         }
     }
 }

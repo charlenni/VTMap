@@ -32,8 +32,22 @@
             return result;
         }
 
+        public Point Clone()
+        {
+            return new Point(X, Y);
+        }
+
+        public override string ToString()
+        {
+            return $"X={X}, Y={Y}";
+        }
+
         public static Point operator +(Point first, Point second) => new Point(first.X + second.X, first.Y + second.Y);
         public static Point operator -(Point first, Point second) => new Point(first.X - second.X, first.Y - second.Y);
+        public static Point operator *(Point first, float scalar) => new Point(first.X * scalar, first.Y * scalar);
+        public static Point operator *(float scalar, Point first) => new Point(first.X * scalar, first.Y * scalar);
+        public static Point operator /(Point first, float scalar) => new Point(first.X / scalar, first.Y / scalar);
+        public static Point operator /(float scalar, Point first) => new Point(first.X / scalar, first.Y / scalar);
         public static bool operator ==(Point first, Point second) => first.X == second.X && first.Y == second.Y;
         public static bool operator !=(Point first, Point second) => first.X != second.X || first.Y != second.Y;
     }

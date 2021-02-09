@@ -51,7 +51,7 @@ namespace VTMap.Core.Utilities
         /// <summary>
         /// Duration of the whole animation cycle in milliseconds
         /// </summary>
-        public long Duration { get; } = 300;
+        public long Duration { get; set; } = 300;
 
         /// <summary>
         /// Animations, that should be made

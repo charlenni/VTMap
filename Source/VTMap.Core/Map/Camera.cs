@@ -6,6 +6,20 @@ namespace VTMap.Core.Map
 {
     public class Camera
     {
+        const int _maxZoomLevel = 24;
+        const int _minZoomLevel = 2;
+
+        const float _minX = 0.0f;
+        const float _maxX = 1.0f;
+        const float _minY = 0.0f;
+        const float _maxY = 1.0f;
+        const float _minBearing = -180.0f;
+        const float _maxBearing = 180.0f;
+        const float _minTilt = 0.0f;
+        const float _maxTilt = 65.0f;
+        const float _minScale = 1 << _minZoomLevel;
+        const float _maxScale = 1 << _maxZoomLevel;
+
         int zoomLevel;
         float bearing;
         float roll;
@@ -176,7 +190,7 @@ namespace VTMap.Core.Map
             this.roll = roll.ClampToDegree();
         }
 
-        public GeoPoint getGeoPoint()
+        public GeoPoint AsGeoPoint()
         {
             return new GeoPoint(MercatorProjection.ToLatitude(Y),
                     MercatorProjection.ToLongitude(X));

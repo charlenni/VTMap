@@ -1,8 +1,8 @@
 ﻿using SkiaSharp;
 using System;
+using System.ComponentModel;
 using System.Threading;
 using VTMap.Core.Events;
-using VTMap.Core.Extensions;
 using VTMap.Core.Map;
 using VTMap.Core.Utilities;
 
@@ -27,13 +27,12 @@ namespace VTMap.View
 
         // Drawing matrix
         SKMatrix _drawMatrix = SKMatrix.Identity;
-        // Animation for swipe
-        Animation _swipeAnimation;
         // Timer for rendering loop
         Timer _timer;
         
         public MapData Map { get; set; }
-        public Camera Viewport { get; private set; }
+        public Viewport Viewport { get; private set; }
+        public Navigator Navigator { get; private set; }
         public ITouchEventHandler TouchEventHandler { get; private set; }
 
         /// <summary>
@@ -44,13 +43,14 @@ namespace VTMap.View
         void InternalInit()
         {
             Map = new MapData();
-            Viewport = new Camera();
+            Viewport = new Viewport();
+            Navigator = new Navigator(Viewport);
+
+            // Register viewport events
+            Viewport.PropertyChanged += OnViewportChanged;
 
             // Create timer for redrawing
             _timer = new Timer(OnTimerCallback, null, TimeSpan.FromMilliseconds(16), TimeSpan.FromMilliseconds(16));
-
-            // Create animation for swipe gestures
-            _swipeAnimation = new Animation(500);
 
             // Register all touch events
             TouchEventHandler.TouchDown += OnTouchDown;
@@ -88,11 +88,15 @@ namespace VTMap.View
             lock (_syncObject)
                 _drawing = true;
 
-            canvas.Clear();
-            canvas.SetMatrix(_drawMatrix);
+            // TODO: Find a better place to set this.
+            // TODO: Isn't needed each time we draw
+            if (Viewport.PixelDensity <= 0)
+                Viewport.PixelDensity = GetPixelDensity();
 
-            var paint = new SKPaint();
-            DrawForDemo(canvas, paint);
+            canvas.Clear();
+            canvas.SetMatrix(Viewport.ViewToScreenMatrix);
+
+            DrawForDemo(canvas);
 
             NeedsRedraw = false;
 
@@ -100,24 +104,27 @@ namespace VTMap.View
                 _drawing = false;
         }
 
+        void OnSizeChanged(object sender, EventArgs e)
+        {
+            Viewport.PixelDensity = GetPixelDensity();
+            Viewport.SizeChanged(Width, Height);
+        }
+
+        private void OnViewportChanged(object sender, PropertyChangedEventArgs e)
+        {
+            NeedsRedraw = true;
+        }
+
         void OnTouchDown(object sender, TouchEventArgs e)
         {
-            if (_swipeAnimation.IsRunning)
-            {
-                _swipeAnimation.Stop();
-
-                NeedsRedraw = true;
-            }
+            Navigator.Cancel();
         }
 
         void OnPinching(object sender, PinchEventArgs e)
         {
-            SKMatrix touchMatrix = SKMatrix.CreateTranslation(e.Translation.X, e.Translation.Y);
-            touchMatrix = touchMatrix.PostConcat(SKMatrix.CreateRotation(e.Rotation, (float)e.MidPoint.X, (float)e.MidPoint.Y));
-            touchMatrix = touchMatrix.PostConcat(SKMatrix.CreateScale(e.Scale, e.Scale, (float)e.MidPoint.X, (float)e.MidPoint.Y));
-            _drawMatrix = _drawMatrix.PostConcat(touchMatrix);
-
-            NeedsRedraw = true;
+            Navigator.MoveByPixel(e.Translation.X, e.Translation.Y);
+            Navigator.RotateBy(e.Rotation, e.MidPoint);
+            Navigator.ScaleBy(e.Scale, e.MidPoint);
         }
 
         void OnPinched(object sender, PinchEventArgs e)
@@ -126,9 +133,7 @@ namespace VTMap.View
 
         void OnPanning(object sender, PanEventArgs e)
         {
-            _drawMatrix = _drawMatrix.PostConcat(SKMatrix.CreateTranslation((float)(e.NewPoint.X - e.PreviousPoint.X), (float)(e.NewPoint.Y - e.PreviousPoint.Y)));
-
-            NeedsRedraw = true;
+            Navigator.MoveByPixel(e.NewPoint.X - e.PreviousPoint.X, e.NewPoint.Y - e.PreviousPoint.Y);
         }
 
         void OnPanned(object sender, PanEventArgs e)
@@ -137,70 +142,42 @@ namespace VTMap.View
 
         void OnSwiped(object sender, SwipeEventArgs e)
         {
-            _swipeAnimation.Entries.Clear();
-            if (e.TranslationVelocity.X != 0 || e.TranslationVelocity.Y != 0)
-            {
-                _swipeAnimation.Entries.Add(CreateSwipeTranslationAnimationEntry(e.TranslationVelocity.X, e.TranslationVelocity.Y, _swipeAnimation.Duration));
-            }
-            _swipeAnimation.Start();
+            Navigator.SwipeWith(e.TranslationVelocity, 500);
         }
 
         void OnSingleTapped(object sender, TapEventArgs e)
         {
-            var reverse = _drawMatrix.Invert();
-            var point = reverse.MapPoint(new SKPoint(e.Location.X, e.Location.Y));
-            var x = (int)Math.Floor(point.X / 150);
-            var y = (int)Math.Floor(point.Y / 150);
+            CheckTap(e, ref singleX, ref singleY);
 
-            if (x >= 0 && x < 10 && y >= 0 && y < 10)
-                if (singleX == x && singleY == y)
-                {
-                    singleX = singleY = -1;
-                    singleAnimation.Stop();
-                }
-                else
-                {
-                    singleX = x;
-                    singleY = y;
-                    singleAnimation.Start();
-                }
-
-            NeedsRedraw = true;
+            if (singleX == -1 && singleY == -1)
+                singleAnimation.Stop();
+            else
+                singleAnimation.Start();
         }
 
         void OnDoubleTapped(object sender, TapEventArgs e)
         {
-            var reverse = _drawMatrix.Invert();
-            var point = reverse.MapPoint(new SKPoint(e.Location.X, e.Location.Y));
-            var x = (int)(point.X / 150);
-            var y = (int)(point.Y / 150);
-
-            if (x >= 0 && x < 10 && y >= 0 && y < 10)
-                if (doubleX == x && doubleY == y)
-                    doubleX = doubleY = -1;
-                else
-                {
-                    doubleX = x;
-                    doubleY = y;
-                }
-
-            NeedsRedraw = true;
+            CheckTap(e, ref doubleX, ref doubleY);
         }
 
         void OnLongPressing(object sender, TapEventArgs e)
         {
-            var reverse = _drawMatrix.Invert();
-            var point = reverse.MapPoint(new SKPoint(e.Location.X, e.Location.Y));
-            var x = (int)(point.X / 150);
-            var y = (int)(point.Y / 150);
+            CheckTap(e, ref longX, ref longY);
+        }
+
+        void CheckTap(TapEventArgs e, ref int valueX, ref int valueY)
+        { 
+            var point = Viewport.FromScreenToView(e.Location);
+            var x = (int)Math.Floor(point.X / 0.1);
+            var y = (int)Math.Floor(point.Y / 0.1);
 
             if (x >= 0 && x < 10 && y >= 0 && y < 10)
-                if (longX == x && longY == y)
-                    longX = longY = -1;
+                if (valueX == x && valueY == y)
+                    valueX = valueY = -1;
                 else
                 {
-                    longX = x;
-                    longY = y;
+                    valueX = x;
+                    valueY = y;
                 }
 
             NeedsRedraw = true;
@@ -209,64 +186,14 @@ namespace VTMap.View
         void OnWheelChanged(object sender, WheelChangedEventArgs e)
         {
             var scale = (float)(e.Delta > 0 ? Math.Pow(1.1, e.Delta / 120) : Math.Pow(0.9, -e.Delta/120));
-            _drawMatrix = _drawMatrix.PostConcat(SKMatrix.CreateTranslation(-e.Location.X, -e.Location.Y));
-            _drawMatrix = _drawMatrix.PostConcat(SKMatrix.CreateScale(scale, scale));
-            _drawMatrix = _drawMatrix.PostConcat(SKMatrix.CreateTranslation(e.Location.X, e.Location.Y));
-
-            NeedsRedraw = true;
+            Navigator.ScaleBy(scale, e.Location);
         }
 
         void OnTimerCallback(object state)
         {
             // Called each 16 ms
             if (NeedsRedraw || Animation.UpdateAnimations())
-                Redraw();
-        }
-
-        AnimationEntry CreateSwipeTranslationAnimationEntry(float velocityX, float velocityY, float maxDuration)
-        {
-            var magnitudeOfV = Math.Sqrt((velocityX * velocityX) + (velocityY * velocityY));
-
-            var animateMillis = magnitudeOfV / 10;
-
-            if (magnitudeOfV < 100 || animateMillis < 16)
-                return null;
-
-            if (animateMillis > maxDuration)
-                animateMillis = maxDuration;
-
-            AnimationEntry entry;
-
-            entry = new AnimationEntry(
-                start: (velocityX, velocityY),
-                end: (0d, 0d),
-                animationStart: 0,
-                animationEnd: 1,
-                easing: Easing.SinIn,
-                tick: SwipeTick,
-                final: null
-            );
-            return entry;
-        }
-
-        void SwipeTick(AnimationEntry entry, double value)
-        {
-            var timeAmount = TimeSpan.FromMilliseconds(16).TotalSeconds; // 16 / 1000d; // 16 milli
-
-            (float velocityX, float velocityY) = ((float, float))entry.Start;
-
-            var xMovement = velocityX * (1d - entry.Easing.Ease(value)) * timeAmount;
-            var yMovement = velocityY * (1d - entry.Easing.Ease(value)) * timeAmount;
-
-            if (xMovement.IsNanOrInfOrZero())
-                xMovement = 0;
-            if (yMovement.IsNanOrInfOrZero())
-                yMovement = 0;
-
-            if (xMovement == 0 && yMovement == 0)
-                return;
-
-            _drawMatrix = _drawMatrix.PostConcat(SKMatrix.CreateTranslation((float)xMovement, (float)yMovement));
+                RunOnMainThread(() => InvalidateSurface());
         }
 
         #region DEMO
@@ -280,8 +207,10 @@ namespace VTMap.View
                     colors[i, j] = new SKColor((byte)rand.Next(255), (byte)rand.Next(255), (byte)rand.Next(255));
         }
 
-        void DrawForDemo(SKCanvas canvas, SKPaint paint)
+        void DrawForDemo(SKCanvas canvas)
         {
+            var paint = new SKPaint();
+
             for (var i = 0; i < 10; i++)
                 for (var j = 0; j < 10; j++)
                 {
@@ -292,10 +221,16 @@ namespace VTMap.View
                         paint.Color = SKColors.Green;
                     if (longX == i && longY == j)
                         paint.Color = SKColors.Red;
-                    canvas.DrawRect(150 * i, 150 * j, 150, 150, paint);
+
+                    var min = Viewport.FromViewToScreen(new Core.Point(0.0 + 0.1 * i, 0.0 + 0.1 * j));
+                    var max = Viewport.FromViewToScreen(new Core.Point(0.1 + 0.1 * i, 0.1 + 0.1 * j));
+                    canvas.DrawRect(0.0f + 0.1f * i, 0.0f + 0.1f * j, 0.1f, 0.1f, paint);
 
                     paint.Color = colors[i, j];
-                    canvas.DrawRect(150 * i + 25, 150 * j + 25, 100, 100, paint);
+
+                    min = Viewport.FromViewToScreen(new Core.Point(0.005 + 0.1 * i, 0.005 + 0.1 * j));
+                    max = Viewport.FromViewToScreen(new Core.Point(0.095 + 0.1 * i, 0.095 + 0.1 * j));
+                    canvas.DrawRect(0.005f + 0.1f * i, 0.005f + 0.1f * j, 0.09f, 0.09f, paint);
                 }
         }
 

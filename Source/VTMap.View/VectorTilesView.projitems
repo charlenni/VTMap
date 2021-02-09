@@ -9,6 +9,9 @@
     <Import_RootNamespace>VectorTilesView</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\SKPointExtension.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Navigator.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Viewport.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)VTMapView.cs" />
   </ItemGroup>
 </Project>
