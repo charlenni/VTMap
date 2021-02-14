@@ -67,16 +67,10 @@ namespace VTMap.View
                 tick: (entry, value) => {
                     var next = (Core.Point)entry.Start + ((Core.Point)entry.End - (Core.Point)entry.Start) * (float)value;
                     _viewport.Center = next;
-                    //var pixelOld = _viewport.ViewToScreenMatrix.MapPoint(new SKPoint(_viewport.Center.X, _viewport.Center.Y));
-                    //var pixelNew = _viewport.ViewToScreenMatrix.MapPoint(new SKPoint(next.X, next.Y));
-                    //InternalMoveBy(pixelOld.X - pixelNew.X, pixelOld.Y - pixelNew.Y);
                 },
                 final: (entry) => {
                     var next = (Core.Point)entry.End;
                     _viewport.Center = next;
-                    //var pixelOld = _viewport.ViewToScreenMatrix.MapPoint(new SKPoint(_viewport.Center.X, _viewport.Center.Y));
-                    //var pixelNew = _viewport.ViewToScreenMatrix.MapPoint(new SKPoint(next.X, next.Y));
-                    //InternalMoveBy(pixelOld.X - pixelNew.X, pixelOld.Y - pixelNew.Y);
                 }));
             _moveAnimation.Start();
         }
@@ -125,7 +119,7 @@ namespace VTMap.View
             if (_rotateAnimation != null && _rotateAnimation.IsRunning)
                 _rotateAnimation.Stop(false);
 
-            var delta = (_viewport.Rotation - newRotation).ClampToDegree();
+            var delta = (newRotation - _viewport.Rotation).ClampToDegree();
 
             if (duration == 0)
             {
@@ -152,9 +146,7 @@ namespace VTMap.View
         {
             _rotation -= degrees;
 
-            pivotScreen = pivotScreen ?? new Core.Point(_viewport.Width * _viewport.PixelDensity / 2f, _viewport.Height * _viewport.PixelDensity / 2f);
-
-            var pivotCenter = _viewport.ScreenToViewMatrix.MapPoint(new SKPoint(pivotScreen.X, pivotScreen.Y)).ToPoint();
+            var pivotCenter = pivotScreen is null ? _viewport.Center : _viewport.ScreenToViewMatrix.MapPoint(new SKPoint(pivotScreen.X, pivotScreen.Y)).ToPoint();
             var newCenter = new Core.Point(0, 0);
             var cosRotation = Math.Cos(-degrees.ToRadians());
             var sinRotation = Math.Sin(-degrees.ToRadians());
@@ -180,8 +172,6 @@ namespace VTMap.View
         {
             if (_scaleAnimation != null && _scaleAnimation.IsRunning)
                 _scaleAnimation.Stop(false);
-
-            pivotScreen = pivotScreen ?? new Core.Point(_viewport.Width * _viewport.PixelDensity / 2f, _viewport.Height * _viewport.PixelDensity / 2f);
 
             var delta = newScale - _viewport.Scale;
 
@@ -209,7 +199,7 @@ namespace VTMap.View
         void InternalScaleBy(float scale, Core.Point pivotScreen = null)
         {
             // Save pivot point in view coordinate system
-            var pivotView = _viewport.ScreenToViewMatrix.MapPoint(new SKPoint(pivotScreen.X, pivotScreen.Y)).ToPoint();
+            var pivotView = pivotScreen is null ? _viewport.Center : _viewport.ScreenToViewMatrix.MapPoint(new SKPoint(pivotScreen.X, pivotScreen.Y)).ToPoint();
             var newCenter = pivotView + (_viewport.Center - pivotView) / scale;
             // Set new scale factor
             _viewport.Scale *= scale;

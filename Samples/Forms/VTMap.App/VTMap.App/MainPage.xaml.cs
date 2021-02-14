@@ -25,7 +25,12 @@ namespace VTMap.App
                 });
             };
 
-            buttonCenter.Command = new Command(() => mapView.Navigator.MoveTo(Core.Point.Zero, 500));
+            buttonCenter.Command = new Command(() =>
+            {
+                mapView.Navigator.MoveTo(Core.Point.Zero, 500);
+                mapView.Navigator.RotateTo(0f, null, 500);
+                mapView.Navigator.ScaleTo(1f, null, 500);
+            });
             buttonRotate.Command = new Command(() => RotateMap());
             buttonZoomIn.Command = new Command(() => mapView.Navigator.ScaleTo(mapView.Viewport.Scale * 1.5f, null, 300));
             buttonZoomOut.Command = new Command(() => mapView.Navigator.ScaleTo(mapView.Viewport.Scale / 1.5f, null, 300));
