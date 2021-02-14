@@ -14,8 +14,8 @@ namespace VTMap.App
             mapView.Viewport.PropertyChanged += (s,e) => {
                 Device.BeginInvokeOnMainThread(() =>
                 {
-                    labelCenter.Text = $"Center {mapView.Viewport.Center.X}/{mapView.Viewport.Center.Y}";
-                    labelScale.Text = $"Scale {mapView.Viewport.Scale}";
+                    labelCenter.Text = $"Center {mapView.Viewport.Center.X:0.000000}/{mapView.Viewport.Center.Y:0.000000}";
+                    labelScale.Text = $"Scale {mapView.Viewport.Scale:#0.0000} / ZoomLevel {mapView.Viewport.ZoomLevel:0.0} / Zoom {mapView.Viewport.Zoom:#0.0000} / ZoomScale {mapView.Viewport.ZoomScale:#0.0000}";
                 });
             };
             mapView.TouchEventHandler.TouchMove += (s, e) => {
@@ -26,8 +26,8 @@ namespace VTMap.App
             };
 
             buttonRotate.Command = new Command(() => RotateMap());
-            buttonZoomIn.Command = new Command(() => mapView.Navigator.ScaleTo(mapView.Viewport.Scale * 2f, null, 300));
-            buttonZoomOut.Command = new Command(() => mapView.Navigator.ScaleTo(mapView.Viewport.Scale / 2f, null, 300));
+            buttonZoomIn.Command = new Command(() => mapView.Navigator.ScaleTo(mapView.Viewport.Scale * 1.5f, null, 300));
+            buttonZoomOut.Command = new Command(() => mapView.Navigator.ScaleTo(mapView.Viewport.Scale / 1.5f, null, 300));
         }
 
         public void RotateMap()

@@ -37,5 +37,10 @@ namespace VTMap.Core.Extensions
 
             return value;
         }
+
+        public static float ClampToMinMax(this float value, float min = float.MinValue, float max = float.MaxValue)
+        {
+            return Math.Max(Math.Min(value, max), min);
+        }
     }
 }

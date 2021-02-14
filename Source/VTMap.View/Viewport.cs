@@ -13,7 +13,7 @@ namespace VTMap.View
         public const int TileSize = 256;
 
         const int _maxZoomLevel = 24;
-        const int _minZoomLevel = 2;
+        const int _minZoomLevel = 0;
 
         const float _minX = 0.0f;
         const float _maxX = 1.0f;
@@ -40,10 +40,10 @@ namespace VTMap.View
         public Viewport()
         {
             _pixelDensity = 0;
-            _scale = 1;
+            _scale = _minScale;
             _center = new Point(0.5f, 0.5f);
-            _zoomLevel = 0;
-            _rotation = 0;
+            _zoomLevel = MathExtensions.Log2((int)_scale);
+            _rotation = 0f;
         }
 
         public float MinRotation { get => _minRotation; }
@@ -102,7 +102,7 @@ namespace VTMap.View
             {
                 if (_scale != value)
                 {
-                    _scale = value;
+                    _scale = value.ClampToMinMax(_minScale, _maxScale);
                     _zoomLevel = MathExtensions.Log2((int)_scale);
                     OnPropertyChanged();
                 }
@@ -152,7 +152,7 @@ namespace VTMap.View
         {
             get
             {
-                return (float)(Math.Log(Scale) / MathLog2);
+                return (float)(Math.Log(_scale) / MathLog2);
             }
             internal set
             {
