@@ -10,15 +10,15 @@ namespace VTMap.View
 {
     public class Viewport : INotifyPropertyChanged
     {
-        public const int TileSize = 256;
+        public const int TileSize = 512;
 
         const int _maxZoomLevel = 24;
         const int _minZoomLevel = 0;
 
-        const float _minX = 0.0f;
-        const float _maxX = 1.0f;
-        const float _minY = 0.0f;
-        const float _maxY = 1.0f;
+        const float _minX = -0.5f;
+        const float _maxX = 0.5f;
+        const float _minY = -0.5f;
+        const float _maxY = 0.5f;
         const float _minRotation = -180.0f;
         const float _maxRotation = 180.0f;
         const float _minScale = 1 << _minZoomLevel;
@@ -41,7 +41,7 @@ namespace VTMap.View
         {
             _pixelDensity = 0;
             _scale = _minScale;
-            _center = new Point(0.5f, 0.5f);
+            _center = new Point(0.0f, 0.0f);
             _zoomLevel = MathExtensions.Log2((int)_scale);
             _rotation = 0f;
         }
@@ -73,7 +73,7 @@ namespace VTMap.View
         // Height of viewport
         public float Height { get; private set; }
 
-        // Center of viewport, projected position with X/Y in range 0..1
+        // Center of viewport, projected position with X/Y in range -0.5..0.5
         public Point Center
         {
             get

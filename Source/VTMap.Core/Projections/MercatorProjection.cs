@@ -20,25 +20,25 @@ namespace VTMap.Core.Projections
         public static readonly float LongitudeMin = -LongitudeMax;
 
         /// <summary>
-        /// Projects a latitude coordinate (in degrees) to the range [0.0,1.0]
+        /// Projects a latitude coordinate (in degrees) to the range [-0.5,0.5]
         /// </summary>
         /// <param name="latitude">Latitude coordinate that should be converted</param>
-        /// <returns>View position in range [0.0,1.0]</returns>
+        /// <returns>View position in range [-0.5,-0.5]</returns>
         public static float LongitudeToX(float longitude)
         {
-            return (longitude + 180.0f) / 360.0f;
+            return longitude / 360.0f;
         }
 
         /// <summary>
-        /// Projects a longitude coordinate (in degrees) to the range [0.0,1.0]
+        /// Projects a longitude coordinate (in degrees) to the range [-0.5,0.5]
         /// </summary>
         /// <param name="longitude">Longitude coordinate that should be converted</param>
-        /// <returns>View position in range [0.0,1.0]</returns>
+        /// <returns>View position in range [-0.5,0.5]</returns>
         public static float LatitudeToY(float latitude)
         {
             double sinLatitude = Math.Sin(latitude * (Math.PI / 180));
 
-            return (float)Math.Max(Math.Min(0.5 - Math.Log((1 + sinLatitude) / (1 - sinLatitude)) / (4 * Math.PI), 1.0), 0.0);
+            return (float)Math.Max(Math.Min(Math.Log((1 + sinLatitude) / (1 - sinLatitude)) / (4 * Math.PI), 1.0), 0.0);
         }
 
         /// <summary>
@@ -68,7 +68,7 @@ namespace VTMap.Core.Projections
         /// <returns>Latitude in degrees</returns>
         public static float ToLatitude(float y)
         {
-            return 90f - 360f * (float)(Math.Atan(Math.Exp((y - 0.5) * (2 * Math.PI))) / Math.PI);
+            return 90f - 360f * (float)(Math.Atan(Math.Exp(y * (2 * Math.PI))) / Math.PI);
         }
 
         /// <summary>
@@ -78,7 +78,7 @@ namespace VTMap.Core.Projections
         /// <returns>Longitude in degrees</returns>
         public static float ToLongitude(float x)
         {
-            return 360.0f * (x - 0.5f);
+            return 180.0f * x;
         }
     }
 }

@@ -168,8 +168,8 @@ namespace VTMap.View
         void CheckTap(TapEventArgs e, ref int valueX, ref int valueY)
         { 
             var point = Viewport.FromScreenToView(e.Location);
-            var x = (int)Math.Floor(point.X / 0.1);
-            var y = (int)Math.Floor(point.Y / 0.1);
+            var x = (int)Math.Floor((point.X + 0.5) / 0.1);
+            var y = (int)Math.Floor((point.Y + 0.5) / 0.1);
 
             if (x >= 0 && x < 10 && y >= 0 && y < 10)
                 if (valueX == x && valueY == y)
@@ -222,15 +222,15 @@ namespace VTMap.View
                     if (longX == i && longY == j)
                         paint.Color = SKColors.Red;
 
-                    var min = Viewport.FromViewToScreen(new Core.Point(0.0 + 0.1 * i, 0.0 + 0.1 * j));
-                    var max = Viewport.FromViewToScreen(new Core.Point(0.1 + 0.1 * i, 0.1 + 0.1 * j));
-                    canvas.DrawRect(0.0f + 0.1f * i, 0.0f + 0.1f * j, 0.1f, 0.1f, paint);
+                    var min = Viewport.FromViewToScreen(new Core.Point(-0.5 + 0.1 * i, -0.5 + 0.1 * j));
+                    var max = Viewport.FromViewToScreen(new Core.Point(-0.4 + 0.1 * i, -0.4 + 0.1 * j));
+                    canvas.DrawRect(-0.5f + 0.1f * i, -0.5f + 0.1f * j, 0.1f, 0.1f, paint);
 
                     paint.Color = colors[i, j];
 
-                    min = Viewport.FromViewToScreen(new Core.Point(0.005 + 0.1 * i, 0.005 + 0.1 * j));
-                    max = Viewport.FromViewToScreen(new Core.Point(0.095 + 0.1 * i, 0.095 + 0.1 * j));
-                    canvas.DrawRect(0.005f + 0.1f * i, 0.005f + 0.1f * j, 0.09f, 0.09f, paint);
+                    min = Viewport.FromViewToScreen(new Core.Point(-0.495 + 0.1 * i, -0.495 + 0.1 * j));
+                    max = Viewport.FromViewToScreen(new Core.Point(-0.405 + 0.1 * i, -0.405 + 0.1 * j));
+                    canvas.DrawRect(-0.495f + 0.1f * i, -0.495f + 0.1f * j, 0.09f, 0.09f, paint);
                 }
         }
 

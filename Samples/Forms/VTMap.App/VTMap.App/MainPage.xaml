@@ -11,6 +11,7 @@
                 <Label x:Name="labelCenter" Text="Center" HorizontalTextAlignment="Center" TextColor="White" FontSize="16"/>
                 <Label x:Name="labelScale" Text="Scale" HorizontalTextAlignment="Center" TextColor="White" FontSize="16"/>
                 <StackLayout Orientation="Horizontal">
+                    <Button x:Name="buttonCenter" Text="Center"/>
                     <Button x:Name="buttonRotate" Text="Rotate"/>
                     <Button x:Name="buttonZoomIn" Text="ZoomIn"/>
                     <Button x:Name="buttonZoomOut" Text="ZoomOut"/>

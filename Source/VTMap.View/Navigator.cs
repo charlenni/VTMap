@@ -13,6 +13,7 @@ namespace VTMap.View
         float _rotation;
         // Animations
         Animation _swipeAnimation;
+        Animation _moveAnimation;
         Animation _rotateAnimation;
         Animation _scaleAnimation;
 
@@ -41,12 +42,46 @@ namespace VTMap.View
                 _scaleAnimation.Stop(false);
         }
 
-        public void MoveBy(Core.Point newCenter)
+        public void MoveBy(float x, float y)
         {
-            MoveBy(newCenter.X, newCenter.Y);
+            InternalMoveBy(x, y);
         }
 
-        public void MoveBy(float x, float y)
+        public void MoveTo(Core.Point newCenter, long duration = 0)
+        {
+            if (_moveAnimation != null && _moveAnimation.IsRunning)
+                _moveAnimation.Stop(false);
+
+            if (duration == 0)
+            {
+                InternalMoveBy(newCenter.X - _viewport.Center.X, newCenter.Y - _viewport.Center.Y);
+                return;
+            }
+
+            // Animate movement
+            _moveAnimation = new Animation(duration);
+            _moveAnimation.Entries.Add(new AnimationEntry(
+                start: _viewport.Center,
+                end: newCenter,
+                easing: Easing.Linear,
+                tick: (entry, value) => {
+                    var next = (Core.Point)entry.Start + ((Core.Point)entry.End - (Core.Point)entry.Start) * (float)value;
+                    _viewport.Center = next;
+                    //var pixelOld = _viewport.ViewToScreenMatrix.MapPoint(new SKPoint(_viewport.Center.X, _viewport.Center.Y));
+                    //var pixelNew = _viewport.ViewToScreenMatrix.MapPoint(new SKPoint(next.X, next.Y));
+                    //InternalMoveBy(pixelOld.X - pixelNew.X, pixelOld.Y - pixelNew.Y);
+                },
+                final: (entry) => {
+                    var next = (Core.Point)entry.End;
+                    _viewport.Center = next;
+                    //var pixelOld = _viewport.ViewToScreenMatrix.MapPoint(new SKPoint(_viewport.Center.X, _viewport.Center.Y));
+                    //var pixelNew = _viewport.ViewToScreenMatrix.MapPoint(new SKPoint(next.X, next.Y));
+                    //InternalMoveBy(pixelOld.X - pixelNew.X, pixelOld.Y - pixelNew.Y);
+                }));
+            _moveAnimation.Start();
+        }
+
+        void InternalMoveBy(float x, float y)
         {
             var changeMatrix = SKMatrix.CreateTranslation(-x, -y);
             var newMatrix = _viewport.ScreenToViewMatrix.PreConcat(changeMatrix);
