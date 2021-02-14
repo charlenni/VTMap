@@ -10,52 +10,168 @@ namespace VTMap.View
     public class Navigator
     {
         Viewport _viewport;
+        float _rotation;
         // Animations
         Animation _swipeAnimation;
+        Animation _rotateAnimation;
+        Animation _scaleAnimation;
 
         public Navigator(Viewport viewport)
         {
             _viewport = viewport;
+            _rotation = _viewport.Rotation;
             // Create animation for swipe gestures
             _swipeAnimation = new Animation(500);
         }
 
-        public void Cancel()
+        // Value for rotation before rotation of viewport starts
+        public float UnSnapRotation { get; set; } = 10.0f;
+
+        // Value for rotation before rotation of viewport stops
+        public float ReSnapRotation { get; set; } = 5.0f;
+
+        public void CancelAnimations()
         {
             if (_swipeAnimation.IsRunning)
-            {
-                _swipeAnimation.Stop();
-            }
+                _swipeAnimation.Stop(false);
+
+            if (_rotateAnimation != null && _rotateAnimation.IsRunning)
+                _rotateAnimation.Stop(false);
+            if (_scaleAnimation != null && _scaleAnimation.IsRunning)
+                _scaleAnimation.Stop(false);
         }
 
-        public void MoveByPixel(float x, float y)
+        public void MoveBy(Core.Point newCenter)
+        {
+            MoveBy(newCenter.X, newCenter.Y);
+        }
+
+        public void MoveBy(float x, float y)
         {
             var changeMatrix = SKMatrix.CreateTranslation(-x, -y);
             var newMatrix = _viewport.ScreenToViewMatrix.PreConcat(changeMatrix);
-            var newCenter = newMatrix.MapPoint(new SKPoint(_viewport.Width * _viewport.PixelDensity / 2, _viewport.Height * _viewport.PixelDensity / 2));
+            var newCenter = newMatrix.MapPoint(new SKPoint(_viewport.Width * _viewport.PixelDensity / 2f, _viewport.Height * _viewport.PixelDensity / 2f));
             _viewport.Center = new Core.Point(newCenter.X, newCenter.Y);
         }
 
-        public void RotateBy(float degrees)
+        /// <summary>
+        /// Rotate Viewport by a relative angle around pivot screen point. 
+        /// It respects UnSnapRotation and ReSnapRotation.
+        /// </summary>
+        /// <param name="newRotation">Relative angle in degrees</param>
+        /// <param name="pivotScreen">Screen point to use as center for rotation</param>
+        public void RotateBy(float degrees, Core.Point pivotScreen = null)
         {
-            RotateBy(_viewport.Bearing, new Core.Point(_viewport.Width / 2, _viewport.Height / 2));
+            if (_rotateAnimation != null && _rotateAnimation.IsRunning)
+                _rotateAnimation.Stop(false);
+
+            _rotation -= degrees;
+
+            if (_viewport.Rotation == 0 && UnSnapRotation > Math.Abs(_rotation))
+                return;
+            else if (_viewport.Rotation == 0 && UnSnapRotation <= Math.Abs(_rotation))
+                degrees = _rotation;
+            else if (_viewport.Rotation != 0 && ReSnapRotation > Math.Abs(_rotation))
+                _rotation = 0;
+             
+            _rotation += degrees;
+
+            InternalRotateBy(degrees, pivotScreen);
         }
 
-        public void RotateBy(float degrees, Core.Point pivot)
+        /// <summary>
+        /// Rotate Viewport to a new angle around pivot screen point using animation with duration
+        /// </summary>
+        /// <param name="newRotation">New rotation angle in degrees</param>
+        /// <param name="pivotScreen">Screen point to use as center for rotation</param>
+        /// <param name="duration">Duration of animation in milliseconds</param>
+        public void RotateTo(float newRotation, Core.Point pivotScreen = null, long duration = 0)
         {
-            var rotationMatrix = SKMatrix.CreateRotationDegrees(-degrees, pivot.X, pivot.Y);
-            var newMatrix = _viewport.ScreenToViewMatrix.PreConcat(rotationMatrix);
-            var newCenter = newMatrix.MapPoint(new SKPoint(_viewport.Width * _viewport.PixelDensity / 2, _viewport.Height * _viewport.PixelDensity / 2));
-            _viewport.Bearing -= degrees;
-            _viewport.Center = new Core.Point(newCenter.X, newCenter.Y);
+            if (_rotateAnimation != null && _rotateAnimation.IsRunning)
+                _rotateAnimation.Stop(false);
+
+            var delta = (_viewport.Rotation - newRotation).ClampToDegree();
+
+            if (duration == 0)
+            {
+                InternalRotateBy(delta, pivotScreen);
+                return;
+            }
+
+            // Animate rotation
+            _rotateAnimation = new Animation(duration);
+            _rotateAnimation.Entries.Add(new AnimationEntry(
+                start: _viewport.Rotation,
+                end: newRotation,
+                easing: Easing.Linear,
+                tick: (entry, value) => { 
+                    InternalRotateBy(_viewport.Rotation - ((float)entry.Start + delta * (float)value), pivotScreen); 
+                },
+                final: (entry) => {
+                    InternalRotateBy(_viewport.Rotation - ((float)entry.Start + delta), pivotScreen);
+                }));
+            _rotateAnimation.Start();
         }
 
-        public void ScaleBy(float scale)
+        void InternalRotateBy(float degrees, Core.Point pivotScreen = null)
         {
-            ScaleBy(scale, new Core.Point(_viewport.Width / 2, _viewport.Height / 2));
+            _rotation -= degrees;
+
+            pivotScreen = pivotScreen ?? new Core.Point(_viewport.Width * _viewport.PixelDensity / 2f, _viewport.Height * _viewport.PixelDensity / 2f);
+
+            var pivotCenter = _viewport.ScreenToViewMatrix.MapPoint(new SKPoint(pivotScreen.X, pivotScreen.Y)).ToPoint();
+            var newCenter = new Core.Point(0, 0);
+            var cosRotation = Math.Cos(-degrees.ToRadians());
+            var sinRotation = Math.Sin(-degrees.ToRadians());
+
+            newCenter.X = (float)(pivotCenter.X + cosRotation * (_viewport.Center.X - pivotCenter.X) - sinRotation * (_viewport.Center.Y - pivotCenter.Y));
+            newCenter.Y = (float)(pivotCenter.Y + sinRotation * (_viewport.Center.X - pivotCenter.X) + cosRotation * (_viewport.Center.Y - pivotCenter.Y));
+
+            _viewport.Rotation = _rotation;
+            _viewport.Center = newCenter;
+
+            _rotation = _viewport.Rotation;
         }
 
-        public void ScaleBy(float scale, Core.Point pivotScreen)
+        public void ScaleBy(float scale, Core.Point pivotScreen = null)
+        {
+            if (_scaleAnimation != null && _scaleAnimation.IsRunning)
+                _scaleAnimation.Stop(false);
+
+            InternalScaleBy(scale, pivotScreen);
+        }
+
+        public void ScaleTo(float newScale, Core.Point pivotScreen = null, long duration = 0)
+        {
+            if (_scaleAnimation != null && _scaleAnimation.IsRunning)
+                _scaleAnimation.Stop(false);
+
+            pivotScreen = pivotScreen ?? new Core.Point(_viewport.Width * _viewport.PixelDensity / 2f, _viewport.Height * _viewport.PixelDensity / 2f);
+
+            var delta = newScale - _viewport.Scale;
+
+            if (duration == 0)
+            {
+                InternalScaleBy(delta, pivotScreen);
+                return;
+            }
+
+            // Animate rotation
+            _scaleAnimation = new Animation(duration);
+            _scaleAnimation.Entries.Add(new AnimationEntry(
+                start: _viewport.Scale,
+                end: newScale,
+                easing: Easing.Linear,
+                tick: (entry, value) => {
+                    InternalScaleBy(((float)entry.Start + delta * (float)value) / _viewport.Scale, pivotScreen);
+                },
+                final: (entry) => {
+                    InternalScaleBy(((float)entry.Start + delta) / _viewport.Scale, pivotScreen);
+                }));
+            _scaleAnimation.Start();
+        }
+
+        void InternalScaleBy(float scale, Core.Point pivotScreen = null)
         {
             // Save pivot point in view coordinate system
             var pivotView = _viewport.ScreenToViewMatrix.MapPoint(new SKPoint(pivotScreen.X, pivotScreen.Y)).ToPoint();
@@ -65,25 +181,9 @@ namespace VTMap.View
             _viewport.Center = newCenter;
         }
 
-        public void MoveRotateScaleBy(float x, float y, float degrees, float scale, Core.Point pivot)
-        {
-            var pivotX = pivot.X + x;
-            var pivotY = pivot.Y + y;
-
-            var changeMatrix = SKMatrix.CreateTranslation(-pivotX, -pivotY); // _viewport.Width / 2 - pivot.X, _viewport.Height / 2 - pivot.Y);
-            changeMatrix = changeMatrix.PostConcat(SKMatrix.CreateRotationDegrees(-degrees));
-            changeMatrix = changeMatrix.PostConcat(SKMatrix.CreateScale(scale, scale));
-            changeMatrix = changeMatrix.PostConcat(SKMatrix.CreateTranslation(pivotX / scale, pivotY / scale)); // _viewport.Width / 2 - pivot.X, _viewport.Height / 2 - pivot.Y));
-            var newMatrix = _viewport.ScreenToViewMatrix.PreConcat(changeMatrix);
-            var newCenter = newMatrix.MapPoint(new SKPoint(_viewport.Width / 2, _viewport.Height / 2));
-            _viewport.Bearing -= degrees;
-            _viewport.Scale *= scale;
-            _viewport.Center = new Core.Point(newCenter.X, newCenter.Y);
-        }
-
         public void SwipeWith(Vector velocity, long duration)
         {
-            Cancel();
+            CancelAnimations();
             _swipeAnimation.Entries.Clear();
             if (velocity.X != 0 || velocity.Y != 0)
             {
@@ -137,7 +237,7 @@ namespace VTMap.View
             if (xMovement == 0 && yMovement == 0)
                 return;
 
-            MoveByPixel((float)xMovement, (float)yMovement);
+            MoveBy((float)xMovement, (float)yMovement);
         }
     }
 }

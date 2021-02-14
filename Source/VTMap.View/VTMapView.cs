@@ -93,7 +93,7 @@ namespace VTMap.View
             if (Viewport.PixelDensity <= 0)
                 Viewport.PixelDensity = GetPixelDensity();
 
-            canvas.Clear();
+            canvas.Clear(SKColors.LightGray);
             canvas.SetMatrix(Viewport.ViewToScreenMatrix);
 
             DrawForDemo(canvas);
@@ -117,12 +117,12 @@ namespace VTMap.View
 
         void OnTouchDown(object sender, TouchEventArgs e)
         {
-            Navigator.Cancel();
+            Navigator.CancelAnimations();
         }
 
         void OnPinching(object sender, PinchEventArgs e)
         {
-            Navigator.MoveByPixel(e.Translation.X, e.Translation.Y);
+            Navigator.MoveBy(e.Translation.X, e.Translation.Y);
             Navigator.RotateBy(e.Rotation, e.MidPoint);
             Navigator.ScaleBy(e.Scale, e.MidPoint);
         }
@@ -133,7 +133,7 @@ namespace VTMap.View
 
         void OnPanning(object sender, PanEventArgs e)
         {
-            Navigator.MoveByPixel(e.NewPoint.X - e.PreviousPoint.X, e.NewPoint.Y - e.PreviousPoint.Y);
+            Navigator.MoveBy(e.NewPoint.X - e.PreviousPoint.X, e.NewPoint.Y - e.PreviousPoint.Y);
         }
 
         void OnPanned(object sender, PanEventArgs e)

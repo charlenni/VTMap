@@ -19,8 +19,8 @@ namespace VTMap.View
         const float _maxX = 1.0f;
         const float _minY = 0.0f;
         const float _maxY = 1.0f;
-        const float _minBearing = -180.0f;
-        const float _maxBearing = 180.0f;
+        const float _minRotation = -180.0f;
+        const float _maxRotation = 180.0f;
         const float _minScale = 1 << _minZoomLevel;
         const float _maxScale = 1 << _maxZoomLevel;
 
@@ -29,10 +29,9 @@ namespace VTMap.View
         float _pixelDensity;
         Point _center;
         int _zoomLevel;
-        float _bearing;
+        float _rotation;
         float _scale;
 
-        SKMatrix _drawMatrix;
         SKMatrix _viewToScreenMatrix = SKMatrix.Identity;
         SKMatrix _screenToViewMatrix = SKMatrix.Identity;
 
@@ -44,8 +43,13 @@ namespace VTMap.View
             _scale = 1;
             _center = new Point(0.5f, 0.5f);
             _zoomLevel = 0;
-            _bearing = 0;
+            _rotation = 0;
         }
+
+        public float MinRotation { get => _minRotation; }
+        public float MaxRotation { get => _maxRotation; }
+
+        public bool Updating { get; internal set; } = false;
 
         /// <summary>
         /// PixelDensity of the canvas with pixels per device independet units
@@ -106,17 +110,17 @@ namespace VTMap.View
         }
 
         //Rotation angle
-        public float Bearing
+        public float Rotation
         {
             get
             {
-                return _bearing;
+                return _rotation;
             }
             internal set
             {
-                if (_bearing != value)
+                if (_rotation != value)
                 {
-                    _bearing = value.ClampToDegree();
+                    _rotation = value.ClampToDegree();
 
                     OnPropertyChanged();
                 }
@@ -268,12 +272,12 @@ namespace VTMap.View
             OnPropertyChanged("Center");
         }
 
-        internal void SetCenter(float x, float y, float scale, float bearing)
+        internal void SetCenter(float x, float y, float scale, float rotation)
         {
             _center.X = x;
             _center.Y = y;
             _scale = scale;
-            _bearing = bearing.ClampToDegree();
+            _rotation = rotation.ClampToDegree();
             _zoomLevel = MathExtensions.Log2((int)scale);
 
             OnPropertyChanged("Center");
@@ -293,7 +297,7 @@ namespace VTMap.View
             _zoomLevel = MathExtensions.Log2((int)_scale);
             _center.X = minx + dx / 2;
             _center.Y = miny + dy / 2;
-            _bearing = 0;
+            _rotation = 0;
 
             OnPropertyChanged();
         }
@@ -306,7 +310,7 @@ namespace VTMap.View
         {
             _center.X = other.Center.X;
             _center.Y = other.Center.Y;
-            _bearing = other.Bearing;
+            _rotation = other.Rotation;
             _scale = other.Scale;
             _zoomLevel = other.ZoomLevel;
 
@@ -333,7 +337,7 @@ namespace VTMap.View
 
             _screenToViewMatrix = SKMatrix.CreateScale(1f / PixelDensity, 1f / PixelDensity);
             _screenToViewMatrix = _screenToViewMatrix.PostConcat(SKMatrix.CreateTranslation(-screenCenterX, -screenCenterY));
-            _screenToViewMatrix = _screenToViewMatrix.PostConcat(SKMatrix.CreateRotationDegrees(_bearing));
+            _screenToViewMatrix = _screenToViewMatrix.PostConcat(SKMatrix.CreateRotationDegrees(_rotation));
             _screenToViewMatrix = _screenToViewMatrix.PostConcat(SKMatrix.CreateScale(viewScale, viewScale));
             _screenToViewMatrix = _screenToViewMatrix.PostConcat(SKMatrix.CreateTranslation(_center.X, _center.Y));
 
