@@ -1,6 +1,8 @@
 ﻿using SkiaSharp;
 using System;
 using System.ComponentModel;
+using System.Diagnostics;
+using System.Globalization;
 using System.Threading;
 using VTMap.Core.Events;
 using VTMap.Core.Map;
@@ -13,6 +15,12 @@ namespace VTMap.View
     /// </summary>
     public partial class VTMapView
     {
+        // Values for drawing loop
+        readonly Stopwatch _stopWatch = new Stopwatch();
+        double _fpsAverage = 0.0;
+        const double _fpsWanted = 60.0;
+        int _fpsCount = 0;
+
         // Begin: All this is for the demos
         SKColor[,] colors = new SKColor[10, 10];
         int singleX = -1, singleY = -1;
@@ -50,7 +58,7 @@ namespace VTMap.View
             Viewport.PropertyChanged += OnViewportChanged;
 
             // Create timer for redrawing
-            _timer = new Timer(OnTimerCallback, null, TimeSpan.FromMilliseconds(16), TimeSpan.FromMilliseconds(16));
+            _timer = new Timer(OnTimerCallback, null, TimeSpan.FromMilliseconds(1000.0 / _fpsWanted), TimeSpan.FromMilliseconds(1000.0 / _fpsWanted));
 
             // Register all touch events
             TouchEventHandler.TouchDown += OnTouchDown;
@@ -235,10 +243,40 @@ namespace VTMap.View
             Navigator.ScaleBy(scale, e.Location);
         }
 
+        // See http://codetips.nl/skiagameloop.html
         void OnTimerCallback(object state)
         {
-            // Called each 16 ms
-            if (NeedsRedraw || Animation.UpdateAnimations())
+            // Get the elapsed time from the stopwatch because the 1/fps timer interval is not accurate and can be off by 2 ms
+            var dt = _stopWatch.Elapsed.TotalSeconds;
+
+            // Restart the time measurement for the next time this method is called
+            _stopWatch.Restart();
+
+            // Workload in background
+            var redraw = NeedsRedraw || Animation.UpdateAnimations();
+
+            // Calculate current fps
+            var fps = dt > 0 ? 1.0 / dt : 0;
+
+            // When the fps is to low, reduce the load by skipping the frame
+            if (fps < _fpsWanted / 2)
+                return;
+
+            // Calculate an averaged fps
+            _fpsAverage += fps;
+            _fpsCount++;
+
+            if (_fpsCount == 20)
+            {
+                fps = _fpsAverage / _fpsCount;
+                Debug.WriteLine($"FPS {fps.ToString("N3", CultureInfo.InvariantCulture)}");
+
+                _fpsCount = 0;
+                _fpsAverage = 0.0;
+            }
+
+            // Called if needed
+            if (redraw)
                 RunOnMainThread(() => InvalidateSurface());
         }
 
