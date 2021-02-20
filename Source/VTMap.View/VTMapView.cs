@@ -91,12 +91,58 @@ namespace VTMap.View
             // TODO: Find a better place to set this.
             // TODO: Isn't needed each time we draw
             if (Viewport.PixelDensity <= 0)
+            {
+                Viewport.SizeChanged(CanvasSize.Width, CanvasSize.Height);
                 Viewport.PixelDensity = GetPixelDensity();
+            }
 
             canvas.Clear(SKColors.LightGray);
-            canvas.SetMatrix(Viewport.ViewToScreenMatrix);
 
-            DrawForDemo(canvas);
+            var paintDemo = new SKPaint { Color = SKColors.Blue, Style = SKPaintStyle.Stroke, StrokeWidth = 1f, };
+            canvas.DrawRect(10, 10, Viewport.TileSize, Viewport.TileSize, paintDemo);
+
+            //canvas.SetMatrix(Viewport.ViewToScreenMatrix);
+
+            //DrawForDemo(canvas);
+
+            var tiles = Viewport.Tiles.AsReadOnly();
+            var numberOfTiles = (float)Math.Pow(2, Viewport.ZoomLevel);
+            var paint = new SKPaint { Color = SKColors.Red, Style = SKPaintStyle.Stroke, StrokeWidth = 1f, }; // 0.01f / Viewport.Scale, };
+            var paintText = new SKPaint { Color = SKColors.Green, IsStroke = false, TextSize = 16f, TextAlign = SKTextAlign.Center, };
+
+            foreach (var tile in tiles)
+            {
+                var viewNW = new Core.Point(-1.0 + 2.0 * (tile.Col / numberOfTiles), -1.0 + 2.0 * (tile.Row / numberOfTiles));
+                var viewNE = new Core.Point(-1.0 + 2.0 * ((tile.Col + 1) / numberOfTiles), -1.0 + 2.0 * (tile.Row / numberOfTiles));
+                var viewSE = new Core.Point(-1.0 + 2.0 * ((tile.Col + 1) / numberOfTiles), -1.0 + 2.0 * ((tile.Row + 1) / numberOfTiles));
+                var viewSW = new Core.Point(-1.0 + 2.0 * (tile.Col / numberOfTiles), -1.0 + 2.0 * ((tile.Row + 1) / numberOfTiles));
+
+                var screenNW = Viewport.FromViewToScreen(viewNW);
+                var screenNE = Viewport.FromViewToScreen(viewNE);
+                var screenSE = Viewport.FromViewToScreen(viewSE);
+                var screenSW = Viewport.FromViewToScreen(viewSW);
+
+                var path = new SKPath();
+                var points = new SKPoint[4];
+
+                points[0] = new SKPoint(screenNW.X, screenNW.Y);
+                points[1] = new SKPoint(screenNE.X, screenNE.Y);
+                points[2] = new SKPoint(screenSE.X, screenSE.Y);
+                points[3] = new SKPoint(screenSW.X, screenSW.Y);
+
+                path.AddPoly(points, true);
+
+                canvas.DrawPath(path, paint);
+
+                var text = $"Tile {tile.Col}/{tile.Row}/{tile.Level}";
+                var width = paintText.MeasureText(text);
+
+                canvas.DrawText(text, screenNW.X + width / 2, (float)(screenNW.Y + 16), paintText); // 0.1 / Viewport.Scale), paintText);
+                canvas.DrawText(text, screenNW.X + width / 2, (float)(screenSE.Y - 4), paintText);
+                canvas.DrawText(text, screenSE.X - width / 2, (float)(screenNW.Y + 16), paintText);
+                canvas.DrawText(text, screenSE.X - width / 2, (float)(screenSE.Y - 4), paintText);
+                canvas.DrawText(text, screenNW.X + (screenSE.X - screenNW.X) / 2, screenNW.Y + (screenSE.Y - screenNW.Y) / 2, paintText);
+            }
 
             NeedsRedraw = false;
 
@@ -168,8 +214,8 @@ namespace VTMap.View
         void CheckTap(TapEventArgs e, ref int valueX, ref int valueY)
         { 
             var point = Viewport.FromScreenToView(e.Location);
-            var x = (int)Math.Floor((point.X + 0.5) / 0.1);
-            var y = (int)Math.Floor((point.Y + 0.5) / 0.1);
+            var x = (int)Math.Floor((point.X + 1.0) / 0.1);
+            var y = (int)Math.Floor((point.Y + 1.0) / 0.1);
 
             if (x >= 0 && x < 10 && y >= 0 && y < 10)
                 if (valueX == x && valueY == y)
@@ -222,15 +268,15 @@ namespace VTMap.View
                     if (longX == i && longY == j)
                         paint.Color = SKColors.Red;
 
-                    var min = Viewport.FromViewToScreen(new Core.Point(-0.5 + 0.1 * i, -0.5 + 0.1 * j));
-                    var max = Viewport.FromViewToScreen(new Core.Point(-0.4 + 0.1 * i, -0.4 + 0.1 * j));
-                    canvas.DrawRect(-0.5f + 0.1f * i, -0.5f + 0.1f * j, 0.1f, 0.1f, paint);
+                    var min = Viewport.FromViewToScreen(new Core.Point(-1.0 + 0.2 * i, -1.0 + 0.2 * j));
+                    var max = Viewport.FromViewToScreen(new Core.Point(-0.8 + 0.2 * i, -0.8 + 0.2 * j));
+                    canvas.DrawRect(-1.0f + 0.2f * i, -1.0f + 0.2f * j, 0.2f, 0.2f, paint);
 
                     paint.Color = colors[i, j];
 
-                    min = Viewport.FromViewToScreen(new Core.Point(-0.495 + 0.1 * i, -0.495 + 0.1 * j));
-                    max = Viewport.FromViewToScreen(new Core.Point(-0.405 + 0.1 * i, -0.405 + 0.1 * j));
-                    canvas.DrawRect(-0.495f + 0.1f * i, -0.495f + 0.1f * j, 0.09f, 0.09f, paint);
+                    min = Viewport.FromViewToScreen(new Core.Point(-0.990 + 0.2 * i, -0.990 + 0.2 * j));
+                    max = Viewport.FromViewToScreen(new Core.Point(-0.810 + 0.2 * i, -0.810 + 0.2 * j));
+                    canvas.DrawRect(-0.990f + 0.2f * i, -0.990f + 0.2f * j, 0.18f, 0.18f, paint);
                 }
         }
 
