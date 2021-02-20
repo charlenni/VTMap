@@ -346,22 +346,6 @@ namespace VTMap.View
                 dy = 0;
 
             return new Point(dx, dy);
-
-            //var mapWidthInPixel = _scale * TileSize;
-            //var mapCenterInPixel = Center * mapWidthInPixel;
-
-            //var distanceX = Width / 2.0 - screen.X;
-            //var distanceY = Height / 2.0 - screen.Y;
-
-            //// Drehen um Fenstermitte
-            //var newX = distanceX * Math.Cos(-_rotation * Math.PI / 180.0) + distanceY * Math.Sin(-_rotation * Math.PI / 180.0);
-            //var newY = distanceX * Math.Sin(-_rotation * Math.PI / 180.0) - distanceY * Math.Cos(-_rotation * Math.PI / 180.0);
-
-            //var resultX = newX * 2.0 / mapWidthInPixel + Center.X;
-            //var resultY = newY * 2.0 / mapWidthInPixel + Center.Y;
-
-            //var result = _screenToViewMatrix.MapPoint(new SKPoint(screen.X, screen.Y));
-            //return new Point(result.X, result.Y);
         }
 
         public Point FromViewToScreen(Point view, bool relativeToCenter = false)
@@ -383,9 +367,6 @@ namespace VTMap.View
                 return new Point(vec.X * screenCenterX, -(vec.Y * screenCenterY));
 
             return new Point(vec.X * screenCenterX + screenCenterX, -(vec.Y * screenCenterY) + screenCenterY);
-
-            //var result = _viewToScreenMatrix.MapPoint(new SKPoint(view.X, view.Y));
-            //return new Point(result.X, result.Y);
         }
        
         public override string ToString()
@@ -718,28 +699,6 @@ namespace VTMap.View
                                  0f,  y,   B, 0f,
                                  0f, 0f,   C,  D,
                                  0f, 0f, -1f, 0f);
-        }
-
-        void RecalcMatrices()
-        {
-            //var viewSize = _scale * TileSize;
-            var viewScale = 2 / (1 << ZoomLevel) / ZoomScale / TileSize; // / Width;
-
-            //_matrix[0, 0] = 1f / PixelDensity * Math.Cos(-Rotation * Math.PI / 180.0) * viewScale; 
-            //_matrix[1, 1] = 1f / PixelDensity * Math.Cos(-Rotation * Math.PI / 180.0) * viewScale
-            //    ;
-            //_matrix[0, 2] = -screenCenterX;
-            //_matrix[1, 2] = -screenCenterY;
-            //_matrix[0, 1] = Math.Sin(-Rotation * Math.PI / 180.0);
-            //_matrix[1, 0] = -Math.Sin(-Rotation * Math.PI / 180.0);
-
-            _screenToViewMatrix = SKMatrix.CreateScale(1f / PixelDensity, 1f / PixelDensity);
-            _screenToViewMatrix = _screenToViewMatrix.PostConcat(SKMatrix.CreateTranslation(-screenCenterX, -screenCenterY));
-            _screenToViewMatrix = _screenToViewMatrix.PostConcat(SKMatrix.CreateRotationDegrees(_rotation));
-            _screenToViewMatrix = _screenToViewMatrix.PostConcat(SKMatrix.CreateScale(viewScale, viewScale));
-            _screenToViewMatrix = _screenToViewMatrix.PostConcat(SKMatrix.CreateTranslation(_center.X, _center.Y));
-
-            _viewToScreenMatrix = _screenToViewMatrix.Invert();
         }
     }
 }
