@@ -28,13 +28,13 @@ namespace VTMap.App
 
             buttonCenter.Command = new Command(() =>
             {
-                mapView.Navigator.MoveTo(Core.Point.Zero, 500);
-                mapView.Navigator.RotateTo(0f, null, 500);
-                mapView.Navigator.ScaleTo(1f, null, 500);
+                mapView.Navigator.MoveTo(Core.Point.Zero, 2000);
+                mapView.Navigator.RotateTo(0f, null, 2000);
+                mapView.Navigator.ScaleTo(1f, null, 2000);
             });
-            buttonRotate.Command = new Command(() => { mapView.Viewport.Rotation += 10; /*mapView.Viewport.Roll += 2;*/ });  // RotateMap());
-            buttonZoomIn.Command = new Command(() => mapView.Navigator.ScaleTo(mapView.Viewport.Scale * 2f, null, 0));
-            buttonZoomOut.Command = new Command(() => mapView.Navigator.ScaleTo(mapView.Viewport.Scale / 2f, null, 0));
+            buttonRotate.Command = new Command(() => { mapView.Navigator.RotateTo(mapView.Viewport.Rotation+10, null, 1000); /*mapView.Viewport.Roll += 2;*/ });  // RotateMap());
+            buttonZoomIn.Command = new Command(() => mapView.Navigator.ScaleTo(mapView.Viewport.Scale * 2f, null, 1000));
+            buttonZoomOut.Command = new Command(() => mapView.Navigator.ScaleTo(mapView.Viewport.Scale / 2f, null, 1000));
         }
 
         public void RotateMap()

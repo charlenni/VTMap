@@ -89,7 +89,7 @@ namespace VTMap.View
                 viewY = (float)(x * -rsin + y * rcos);
             }
 
-            _viewport.Center = new Core.Point(_viewport.Center.X - viewX / _viewport.TileScaleFactor, _viewport.Center.Y - viewY / _viewport.TileScaleFactor);
+            _viewport.Center = new Core.Point(_viewport.Center.X - 2 * viewX / _viewport.TileScaleFactor, _viewport.Center.Y + 2 * viewY / _viewport.TileScaleFactor);
         }
 
         /// <summary>

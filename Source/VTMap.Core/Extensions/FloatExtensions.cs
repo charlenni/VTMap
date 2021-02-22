@@ -4,7 +4,7 @@ namespace VTMap.Core.Extensions
 {
     public static class FloatExtensions
     {
-        static float factor2PI = (float)(2.0f / Math.PI);
+        static float factor2PI = (float)(2.0 / Math.PI);
         static float factorPI180 = (float)(Math.PI / 180.0);
         static float factor180PI = (float)(180.0 / Math.PI);
 

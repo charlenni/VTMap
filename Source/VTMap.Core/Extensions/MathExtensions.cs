@@ -4,6 +4,16 @@ namespace VTMap.Core.Extensions
 {
     public static class MathExtensions
     {
+        public static float Min(float f1, float f2, float f3 = float.PositiveInfinity, float f4 = float.PositiveInfinity)
+        {
+            return Math.Min(f1, Math.Min(f2, Math.Min(f3, f4)));
+        }
+
+        public static float Max(float f1, float f2, float f3 = float.NegativeInfinity, float f4 = float.NegativeInfinity)
+        {
+            return Math.Max(f1, Math.Max(f2, Math.Max(f3, f4)));
+        }
+
         /// <summary>
         /// Integer version of log2(x)
         /// </summary>

@@ -109,7 +109,8 @@ namespace VTMap.View
             var paintDemo = new SKPaint { Color = SKColors.Blue, Style = SKPaintStyle.Stroke, StrokeWidth = 1f, };
             canvas.DrawRect(10, 10, Viewport.TileSize, Viewport.TileSize, paintDemo);
 
-            //canvas.SetMatrix(Viewport.ViewToScreenMatrix);
+            canvas.DrawLine(Viewport.Width / 2 - 50, Viewport.Height / 2, Viewport.Width / 2 + 50, Viewport.Height / 2, paintDemo);
+            canvas.DrawLine(Viewport.Width / 2, Viewport.Height / 2 - 50, Viewport.Width / 2, Viewport.Height / 2 + 50, paintDemo);
 
             //DrawForDemo(canvas);
 
@@ -118,8 +119,63 @@ namespace VTMap.View
             var paint = new SKPaint { Color = SKColors.Red, Style = SKPaintStyle.Stroke, StrokeWidth = 1f, }; // 0.01f / Viewport.Scale, };
             var paintText = new SKPaint { Color = SKColors.Green, IsStroke = false, TextSize = 16f, TextAlign = SKTextAlign.Center, };
 
+            var cs = Viewport.TileScaleFactor;
+            var cx = Viewport.Center.X * cs;
+            var cy = Viewport.Center.Y * cs;
+
             foreach (var tile in tiles)
             {
+                //var view = new SK3dView();
+
+                //view.Save();
+                //view.RotateZDegrees(-Viewport.Rotation);
+                //view.RotateYDegrees(Viewport.Roll);
+                //view.RotateXDegrees(Viewport.Tilt);
+                //view.Translate(CanvasSize.Width / 2, CanvasSize.Height / 2, 0);
+                //view.ApplyToCanvas(canvas);
+                //view.Restore();
+
+                //canvas.Scale(1, -1);
+                // Get matrix for tile
+                var scale = 1 / numberOfTiles / 256 * Viewport.TileScaleFactor;
+
+                var scaleMatrix = SKMatrix44.CreateScale(scale, scale, 1);
+                //scaleMatrix.PostConcat(SKMatrix44.CreateTranslation(1.0f - 2.0f * (tile.Col / numberOfTiles) + cx, 1.0f - 2.0f * (tile.Row / numberOfTiles) + cy, 0));
+                //var projMatrix = Viewport.MatrixForTile(tile).ToSKMatrix();
+                //scaleMatrix.PostConcat(projMatrix);
+                //scaleMatrix.PostConcat(SKMatrix44.CreateScale(CanvasSize.Width / 2, -CanvasSize.Height / 2, 1));
+                //scaleMatrix.PostConcat(SKMatrix44.CreateTranslation(CanvasSize.Width / 2, CanvasSize.Height / 2, 0));
+
+                //scaleMatrix = SKMatrix44.CreateIdentity();
+                //scaleMatrix.PostConcat(projMatrix);
+
+                //var matrix = projMatrix.Matrix;
+
+                //matrix.Persp2 = 1;
+                //matrix.PreConcat(SKMatrix.CreateTranslation(-128, -128));
+                //matrix.PreConcat(SKMatrix.CreateScale(1/256, 1/256));
+                //matrix = matrix.PostConcat(SKMatrix.CreateScale(CanvasSize.Width / 2, -CanvasSize.Height / 2));
+
+                //var viewNW = new Core.Point(-1.0 + 2.0 * (tile.Col / numberOfTiles), -1.0 + 2.0 * (tile.Row / numberOfTiles));
+                //var screenNW = Viewport.FromViewToScreen(viewNW);
+
+                //matrix.TransX = screenNW.X;
+                //matrix.TransY = screenNW.Y;
+
+                //var trans = SKMatrix.CreateTranslation(100, 100); // CanvasSize.Width / 2, CanvasSize.Height / 2);
+                //matrix = matrix.PostConcat(trans);
+                var matrix = Viewport.MatrixForTile(tile);
+
+                var p1 = matrix.MapPoint(new SKPoint(0, 0));
+                var p2 = matrix.MapPoint(new SKPoint(256, 0));
+                var p3 = matrix.MapPoint(new SKPoint(256, 256));
+                var p4 = matrix.MapPoint(new SKPoint(0, 256));
+
+                //var newMat = mat.Matrix;
+                //var tempMat = SKMatrix.CreateScaleTranslation(256, 256, Viewport.Width / 2, Viewport.Height / 2);
+                //newMat = SKMatrix.Concat(newMat, tempMat);
+                //canvas.SetMatrix(newMat);
+
                 var viewNW = new Core.Point(-1.0 + 2.0 * (tile.Col / numberOfTiles), -1.0 + 2.0 * (tile.Row / numberOfTiles));
                 var viewNE = new Core.Point(-1.0 + 2.0 * ((tile.Col + 1) / numberOfTiles), -1.0 + 2.0 * (tile.Row / numberOfTiles));
                 var viewSE = new Core.Point(-1.0 + 2.0 * ((tile.Col + 1) / numberOfTiles), -1.0 + 2.0 * ((tile.Row + 1) / numberOfTiles));
@@ -133,23 +189,38 @@ namespace VTMap.View
                 var path = new SKPath();
                 var points = new SKPoint[4];
 
-                points[0] = new SKPoint(screenNW.X, screenNW.Y);
-                points[1] = new SKPoint(screenNE.X, screenNE.Y);
-                points[2] = new SKPoint(screenSE.X, screenSE.Y);
-                points[3] = new SKPoint(screenSW.X, screenSW.Y);
+                //points[0] = new SKPoint(screenNW.X, screenNW.Y);
+                //points[1] = new SKPoint(screenNE.X, screenNE.Y);
+                //points[2] = new SKPoint(screenSE.X, screenSE.Y);
+                //points[3] = new SKPoint(screenSW.X, screenSW.Y);
 
                 path.AddPoly(points, true);
 
+                //canvas.DrawPath(path, paint);
+
+                canvas.SetMatrix(matrix);
+
+                points[0] = new SKPoint(0, 0);
+                points[1] = new SKPoint(256, 0);
+                points[2] = new SKPoint(256, 256);
+                points[3] = new SKPoint(0, 256);
+
+                path = new SKPath();
+                path.AddPoly(points, true);
+
                 canvas.DrawPath(path, paint);
+                canvas.DrawCircle(32, 32, 16, paint);
 
                 var text = $"Tile {tile.Col}/{tile.Row}/{tile.Level}";
                 var width = paintText.MeasureText(text);
 
-                canvas.DrawText(text, screenNW.X + width / 2, (float)(screenNW.Y + 16), paintText); // 0.1 / Viewport.Scale), paintText);
-                canvas.DrawText(text, screenNW.X + width / 2, (float)(screenSE.Y - 4), paintText);
-                canvas.DrawText(text, screenSE.X - width / 2, (float)(screenNW.Y + 16), paintText);
-                canvas.DrawText(text, screenSE.X - width / 2, (float)(screenSE.Y - 4), paintText);
-                canvas.DrawText(text, screenNW.X + (screenSE.X - screenNW.X) / 2, screenNW.Y + (screenSE.Y - screenNW.Y) / 2, paintText);
+                canvas.DrawText(text, width / 2, 16, paintText); // 0.1 / Viewport.Scale), paintText);
+                canvas.DrawText(text, width / 2, 252, paintText);
+                canvas.DrawText(text, 256 - width / 2, 16, paintText);
+                canvas.DrawText(text, 256 - width / 2, 252, paintText);
+
+                canvas.SetMatrix(matrix.PreConcat(SKMatrix.CreateRotationDegrees(Viewport.Rotation, 128, 128)));
+                canvas.DrawText(text, 128, 128, paintText);
             }
 
             NeedsRedraw = false;
