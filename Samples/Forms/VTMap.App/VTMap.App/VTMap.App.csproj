@@ -18,6 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\..\Source\VTMap.Core\VTMap.Core.csproj" />
     <ProjectReference Include="..\..\..\..\Source\VTMap.View.Forms\VTMap.View.Forms.csproj" />
   </ItemGroup>
 </Project>

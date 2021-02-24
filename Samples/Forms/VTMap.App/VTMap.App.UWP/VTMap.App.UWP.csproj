@@ -156,6 +156,10 @@
     <PackageReference Include="Xamarin.Essentials" Version="1.6.1" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\..\Source\VTMap.Core\VTMap.Core.csproj">
+      <Project>{6969a8fa-3cdb-4536-9098-603b5ae52236}</Project>
+      <Name>VTMap.Core</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\..\Source\VTMap.View.Forms\VTMap.View.Forms.csproj">
       <Project>{2aceb961-cda1-496b-a516-d657d3459d16}</Project>
       <Name>VTMap.View.Forms</Name>
