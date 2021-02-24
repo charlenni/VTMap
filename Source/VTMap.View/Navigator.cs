@@ -1,9 +1,7 @@
-﻿using SkiaSharp;
-using System;
+﻿using System;
 using VTMap.Core.Extensions;
 using VTMap.Core.Primitives;
 using VTMap.Core.Utilities;
-using VTMap.Extensions;
 
 namespace VTMap.View
 {
