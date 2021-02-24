@@ -69,7 +69,6 @@ namespace VTMap.Core.Events
             switch (e.ActionType)
             {
                 case TouchActionType.Entered:
-                    System.Diagnostics.Debug.WriteLine($"Entered {e.Id} at {e.Location.X}/{e.Location.Y}");
                     break;
                 case TouchActionType.Pressed:
                     if (HandleDown(e))
@@ -138,15 +137,12 @@ namespace VTMap.Core.Events
                     }
                     ClearLongPressTimer();
                     _touchDictionary.Remove(e.Id); 
-                    System.Diagnostics.Debug.WriteLine($"Cancelled {e.Id}");
                     break;
                 case TouchActionType.Exited:
                     ClearLongPressTimer();
-                    System.Diagnostics.Debug.WriteLine($"Exited {e.Id} at {e.Location.X}/{e.Location.Y}");
                     break;
                 case TouchActionType.WheelChanged:
                     HandleWheelChanged(new WheelChangedEventArgs(e.Id, e.Location, e.WheelDelta, e.MouseButton));
-                    System.Diagnostics.Debug.WriteLine($"WheelChanged {e.Id} about {e.WheelDelta} at {e.Location.X}/{e.Location.Y}");
                     break;
                 default:
                     throw new NotImplementedException();
@@ -157,7 +153,6 @@ namespace VTMap.Core.Events
 
         public bool HandleDown(TouchEventArgs e)
         {
-            System.Diagnostics.Debug.WriteLine($"Pressed {e.Id} {e.MouseButton} at {e.Location.X}/{e.Location.Y}");
             TouchDown?.Invoke(this, e);
 
             return e.Handled;
@@ -165,7 +160,6 @@ namespace VTMap.Core.Events
 
         public bool HandleUp(TouchEventArgs e)
         {
-            System.Diagnostics.Debug.WriteLine($"Released {e.Id} {e.MouseButton} at {e.Location.X}/{e.Location.Y}");
             TouchUp?.Invoke(this, e);
 
             return e.Handled;
@@ -173,7 +167,6 @@ namespace VTMap.Core.Events
 
         public bool HandleMove(TouchEventArgs e)
         {
-            System.Diagnostics.Debug.WriteLine($"Pressed {e.Id} {e.MouseButton} at {e.Location.X}/{e.Location.Y}");
             TouchMove?.Invoke(this, e);
 
             return e.Handled;
@@ -182,71 +175,60 @@ namespace VTMap.Core.Events
         // Unsure tapping event. Could become a double tap
         public void HandleTapping(TapEventArgs e)
         {
-            System.Diagnostics.Debug.WriteLine($"Tapping {e.Id} to {e.Location.X}/{e.Location.Y}");
             Tapping?.Invoke(this, e);
         }
 
         // Certified single tap. No tap in special time range.
         public void HandleSingleTapped(TapEventArgs e)
         {
-            System.Diagnostics.Debug.WriteLine($"Single Tap {e.Id} to {e.Location.X}/{e.Location.Y}");
             SingleTapped?.Invoke(this, e);
         }
 
         public void HandleDoubleTapped(TapEventArgs e)
         {
-            System.Diagnostics.Debug.WriteLine($"Double Tap {e.Id} to {e.Location.X}/{e.Location.Y}");
             DoubleTapped?.Invoke(this, e);
         }
 
         // Still pressing
         public void HandleLongPressing(TapEventArgs e)
         {
-            System.Diagnostics.Debug.WriteLine($"Long Pressing {e.Id} to {e.Location.X}/{e.Location.Y}");
             LongPressing?.Invoke(this, e);
         }
 
         public void HandleLongPressed(TapEventArgs e)
         {
-            System.Diagnostics.Debug.WriteLine($"Long Pressed {e.Id} to {e.Location.X}/{e.Location.Y}");
             LongPressed?.Invoke(this, e);
         }
 
         // A finger came down and is moving on the screen.
         public void HandlePanning(PanEventArgs e)
         {
-            System.Diagnostics.Debug.WriteLine($"Panning from {e.PreviousPoint.X}/{e.PreviousPoint.Y} to {e.NewPoint.X}/{e.NewPoint.Y}");
             Panning?.Invoke(this, e);
         }
 
         public void HandlePanned(PanEventArgs e)
         {
-            System.Diagnostics.Debug.WriteLine($"Panned from {e.PreviousPoint.X}/{e.PreviousPoint.Y} to {e.NewPoint.X}/{e.NewPoint.Y}");
             Panned?.Invoke(this, e);
         }
 
         public void HandleSwiped(SwipeEventArgs e)
         {
-            System.Diagnostics.Debug.WriteLine($"Swiped with lift off at {e.LastPoint.X}/{e.LastPoint.Y} with velocitys transX = {e.TranslationVelocity.X}, transY = {e.TranslationVelocity.Y}, rotation = {e.RotationVelocity} and scale = {e.ScaleVelocity}");
             Swiped?.Invoke(this, e);
         }
 
         //  Two fingers hit the screen and are moving towards or away from each other
         public void HandlePinching(PinchEventArgs e)
         {
-            System.Diagnostics.Debug.WriteLine($"Pinch Event with rotation = {_rotation} and scale = {_scale}");
             Pinching?.Invoke(this, e);
         }
 
         public void HandlePinched(PinchEventArgs e)
         {
-            System.Diagnostics.Debug.WriteLine($"Pinch Event with rotation = {e.Rotation} and scale = {e.Scale}");
             Pinched?.Invoke(this, e);
         }
 
         private void HandleWheelChanged(WheelChangedEventArgs e)
         {
-            System.Diagnostics.Debug.WriteLine($"Wheel Event with delta = {e.Delta} and mouse button = {e.MouseButton}");
             WheelChanged?.Invoke(this, e);
         }
 
