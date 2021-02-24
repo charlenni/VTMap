@@ -1,0 +1,43 @@
+﻿using AppKit;
+using Foundation;
+using System;
+using System.IO;
+using Xamarin.Forms;
+using Xamarin.Forms.Platform.MacOS;
+
+namespace VTMap.App.Mac
+{
+    [Register("AppDelegate")]
+    public class AppDelegate : FormsApplicationDelegate
+    {
+        NSWindow window;
+
+        public AppDelegate()
+        {
+            var style = NSWindowStyle.Closable | NSWindowStyle.Titled | NSWindowStyle.Resizable;
+            var rect = new CoreGraphics.CGRect(0, 0, 800, 600);
+
+            window = new NSWindow(rect, style, NSBackingStore.Buffered, false);
+
+            window.Title = "VTMap Sample for Mac";
+            window.TitleVisibility = NSWindowTitleVisibility.Hidden;
+        }
+
+        public override NSWindow MainWindow => window;
+
+        public override void DidFinishLaunching(NSNotification notification)
+        {
+            Xamarin.Forms.Forms.Init();
+            LoadApplication(new App());
+
+            base.DidFinishLaunching(notification);
+        }
+
+        public override void WillTerminate(NSNotification notification)
+        {
+            // Insert code here to tear down your application
+        }
+
+        private static string MbTilesLocationOnMac => Environment.GetFolderPath(Environment.SpecialFolder.Personal);
+    }
+}

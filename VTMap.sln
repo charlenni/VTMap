@@ -23,6 +23,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VTMap.App.Android", "Sample
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VTMap.App.iOS", "Samples\Forms\VTMap.App\VTMap.App.iOS\VTMap.App.iOS.csproj", "{2BEE9FE7-0C4C-40DF-B278-5310B2A93005}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VTMap.App.Mac", "Samples\Forms\VTMap.App\VTMap.App.Mac\VTMap.App.Mac.csproj", "{975B6BBD-CD89-4A69-8F42-3C999D9F4D99}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		Source\VTMap.View\VectorTilesView.projitems*{2aceb961-cda1-496b-a516-d657d3459d16}*SharedItemsImports = 5
@@ -197,6 +199,21 @@ Global
 		{2BEE9FE7-0C4C-40DF-B278-5310B2A93005}.Release|iPhoneSimulator.Build.0 = Release|iPhoneSimulator
 		{2BEE9FE7-0C4C-40DF-B278-5310B2A93005}.Release|x64.ActiveCfg = Release|iPhoneSimulator
 		{2BEE9FE7-0C4C-40DF-B278-5310B2A93005}.Release|x86.ActiveCfg = Release|iPhoneSimulator
+		{975B6BBD-CD89-4A69-8F42-3C999D9F4D99}.Debug|Any CPU.ActiveCfg = Debug|iPhone
+		{975B6BBD-CD89-4A69-8F42-3C999D9F4D99}.Debug|ARM.ActiveCfg = Debug|iPhone
+		{975B6BBD-CD89-4A69-8F42-3C999D9F4D99}.Debug|iPhone.ActiveCfg = Debug|iPhone
+		{975B6BBD-CD89-4A69-8F42-3C999D9F4D99}.Debug|iPhone.Build.0 = Debug|iPhone
+		{975B6BBD-CD89-4A69-8F42-3C999D9F4D99}.Debug|iPhoneSimulator.ActiveCfg = Debug|iPhone
+		{975B6BBD-CD89-4A69-8F42-3C999D9F4D99}.Debug|x64.ActiveCfg = Debug|iPhone
+		{975B6BBD-CD89-4A69-8F42-3C999D9F4D99}.Debug|x86.ActiveCfg = Debug|iPhone
+		{975B6BBD-CD89-4A69-8F42-3C999D9F4D99}.Release|Any CPU.ActiveCfg = Release|iPhone
+		{975B6BBD-CD89-4A69-8F42-3C999D9F4D99}.Release|ARM.ActiveCfg = Release|iPhone
+		{975B6BBD-CD89-4A69-8F42-3C999D9F4D99}.Release|iPhone.ActiveCfg = Release|iPhone
+		{975B6BBD-CD89-4A69-8F42-3C999D9F4D99}.Release|iPhone.Build.0 = Release|iPhone
+		{975B6BBD-CD89-4A69-8F42-3C999D9F4D99}.Release|iPhoneSimulator.ActiveCfg = Release|iPhone
+		{975B6BBD-CD89-4A69-8F42-3C999D9F4D99}.Release|x64.ActiveCfg = Release|iPhone
+		{975B6BBD-CD89-4A69-8F42-3C999D9F4D99}.Release|x86.ActiveCfg = Release|iPhone
+		{975B6BBD-CD89-4A69-8F42-3C999D9F4D99}.Debug|Any CPU.Build.0 = Debug|iPhone
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -208,6 +225,7 @@ Global
 		{849C31BB-BDF3-49B5-9FC4-9F00B73F2D8F} = {86C4F1B2-813B-4B73-89BA-91777BA2E522}
 		{6740D401-437B-49F9-BCCA-6F5FF16F193D} = {86C4F1B2-813B-4B73-89BA-91777BA2E522}
 		{2BEE9FE7-0C4C-40DF-B278-5310B2A93005} = {86C4F1B2-813B-4B73-89BA-91777BA2E522}
+		{975B6BBD-CD89-4A69-8F42-3C999D9F4D99} = {86C4F1B2-813B-4B73-89BA-91777BA2E522}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {A972F16E-9317-462D-9AF4-182DF868C0A9}
