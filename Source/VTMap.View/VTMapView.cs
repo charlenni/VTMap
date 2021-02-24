@@ -116,8 +116,8 @@ namespace VTMap.View
             var tiles = Viewport.Tiles.AsReadOnly();
             var tileScale = 1; // 4096 / Viewport.TileSize;
 
-            var paint = new SKPaint { Color = SKColors.Red, Style = SKPaintStyle.Stroke, StrokeWidth = tileScale, };
-            var paintText = new SKPaint { Color = SKColors.Green, IsStroke = false, TextSize = tileScale, TextAlign = SKTextAlign.Center, };
+            var paint = new SKPaint { Color = SKColors.Red, Style = SKPaintStyle.Stroke, StrokeWidth = 1, };
+            var paintText = new SKPaint { Color = SKColors.Green, IsStroke = false, TextSize = Viewport.TileSize / 16, TextAlign = SKTextAlign.Center, };
 
             foreach (var tile in tiles)
             {
@@ -131,28 +131,28 @@ namespace VTMap.View
                 var points = new SKPoint[4];
 
                 points[0] = new SKPoint(0, 0);
-                points[1] = new SKPoint(4096, 0);
-                points[2] = new SKPoint(4096, 4096);
-                points[3] = new SKPoint(0, 4096);
+                points[1] = new SKPoint(Viewport.TileSize, 0);
+                points[2] = new SKPoint(Viewport.TileSize, Viewport.TileSize);
+                points[3] = new SKPoint(0, Viewport.TileSize);
 
                 var path = new SKPath();
                 path.AddPoly(points, true);
 
                 canvas.DrawPath(path, paint);
 
-                canvas.DrawCircle(256, 256, 128, paint);
+                canvas.DrawCircle(Viewport.TileSize / 8, Viewport.TileSize / 8, Viewport.TileSize / 16, paint);
 
                 var text = $"Tile {tile.Col}/{tile.Row}/{tile.Level}";
                 var width = paintText.MeasureText(text);
 
-                canvas.DrawText(text, width / 2, 64, paintText); // 0.1 / Viewport.Scale), paintText);
-                canvas.DrawText(text, width / 2, 4032, paintText);
-                canvas.DrawText(text, 4096 - width / 2, 64, paintText);
-                canvas.DrawText(text, 4096 - width / 2, 4032, paintText);
+                canvas.DrawText(text, width / 2, Viewport.TileSize / 16, paintText); // 0.1 / Viewport.Scale), paintText);
+                canvas.DrawText(text, width / 2, Viewport.TileSize - Viewport.TileSize / 64, paintText);
+                canvas.DrawText(text, Viewport.TileSize - width / 2, Viewport.TileSize / 16, paintText);
+                canvas.DrawText(text, Viewport.TileSize - width / 2, Viewport.TileSize - Viewport.TileSize / 64, paintText);
 
                 // Draw text always horizontical
-                canvas.SetMatrix(matrix.PreConcat(SKMatrix.CreateRotationDegrees(Viewport.Rotation, 2048, 2048)));
-                canvas.DrawText(text, 2048, 2048, paintText);
+                canvas.SetMatrix(matrix.PreConcat(SKMatrix.CreateRotationDegrees(Viewport.Rotation, Viewport.TileSize / 2, Viewport.TileSize / 2)));
+                canvas.DrawText(text, Viewport.TileSize / 2, Viewport.TileSize / 2, paintText);
             }
 
             NeedsRedraw = false;

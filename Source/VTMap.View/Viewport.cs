@@ -13,7 +13,7 @@ namespace VTMap.View
 {
     public class Viewport : INotifyPropertyChanged
     {
-        public const int TileSize = 256;
+        public const int TileSize = 512;
 
         const int _maxZoomLevel = 24;
         const int _minZoomLevel = 0;
@@ -284,7 +284,7 @@ namespace VTMap.View
         public SKMatrix MatrixForTile(TileIndex tile)
         {
             var numberOfTiles = (float)Math.Pow(2, ZoomLevel);
-            var scaleFactor = 2 * ZoomScale / _scale / TileSize; // / numberOfTiles; // Was ZoomScale instead of _scale
+            var scaleFactor = 2 * ZoomScale / TileScaleFactor;
             var viewNW = new Core.Point(-1.0 + 2.0 * (tile.Col / numberOfTiles), -1.0 + 2.0 * (tile.Row / numberOfTiles));
             var screenNW = FromViewToScreen(viewNW);
 
