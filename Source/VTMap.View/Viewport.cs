@@ -3,7 +3,6 @@ using SkiaSharp;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Numerics;
 using System.Runtime.CompilerServices;
 using VTMap.Core;
 using VTMap.Core.Extensions;
@@ -289,8 +288,7 @@ namespace VTMap.View
             var screenNW = FromViewToScreen(viewNW);
 
             var matrix = SKMatrix.CreateScale(scaleFactor, scaleFactor);
-            //matrix = matrix.PostConcat(SKMatrix.CreateTranslation(screenCenterX * scaleFactor, screenCenterY * scaleFactor));
-            matrix = matrix.PostConcat(SKMatrix.CreateTranslation(viewNW.X, viewNW.Y)); // - _center.X, viewNW.Y - _center.Y));
+            matrix = matrix.PostConcat(SKMatrix.CreateTranslation(viewNW.X, viewNW.Y));
             matrix = matrix.PostConcat(_viewToScreenMatrix);
 
             return matrix;

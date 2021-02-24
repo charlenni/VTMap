@@ -254,7 +254,7 @@ namespace VTMap.View
 
         void SwipeTick(AnimationEntry entry, double value)
         {
-            var timeAmount = TimeSpan.FromMilliseconds(16).TotalSeconds; // 16 / 1000d; // 16 milli
+            var timeAmount = TimeSpan.FromMilliseconds(16).TotalSeconds;
 
             (float velocityX, float velocityY) = ((float, float))entry.Start;
 
