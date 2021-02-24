@@ -356,11 +356,16 @@ namespace VTMap.Core.Events
 
         private void SaveTouch(TouchEventArgs e)
         {
-            _touchDictionary.Add(e.Id, new TouchManipulationInfo
+            var tmi = new TouchManipulationInfo
             {
                 PreviousPoint = e.Location,
                 NewPoint = e.Location,
-            });
+            };
+
+            if (_touchDictionary.ContainsKey(e.Id))
+                _touchDictionary[e.Id] = tmi;
+            else
+                _touchDictionary.Add(e.Id, tmi);
         }
 
         private void CreateDoubleTapTimer(TapEventArgs tapEventArgs)
