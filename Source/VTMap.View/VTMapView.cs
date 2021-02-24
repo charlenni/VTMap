@@ -96,14 +96,6 @@ namespace VTMap.View
             lock (_syncObject)
                 _drawing = true;
 
-            // TODO: Find a better place to set this.
-            // TODO: Isn't needed each time we draw
-            if (Viewport.PixelDensity <= 0)
-            {
-                Viewport.SizeChanged(GetCanvasSize().Width, GetCanvasSize().Height);
-                Viewport.PixelDensity = GetPixelDensity();
-            }
-
             canvas.Clear(SKColors.LightGray);
 
             var paintDemo = new SKPaint { Color = SKColors.Blue, Style = SKPaintStyle.Stroke, StrokeWidth = 1f, };
@@ -114,8 +106,7 @@ namespace VTMap.View
             //DrawForDemo(canvas);
 
             var tiles = Viewport.Tiles.AsReadOnly();
-            var tileScale = 1; // 4096 / Viewport.TileSize;
-
+            
             var paint = new SKPaint { Color = SKColors.Red, Style = SKPaintStyle.Stroke, StrokeWidth = 1, };
             var paintText = new SKPaint { Color = SKColors.Green, IsStroke = false, TextSize = Viewport.TileSize / 16, TextAlign = SKTextAlign.Center, };
 
@@ -123,8 +114,6 @@ namespace VTMap.View
             {
                 // Get matrix for tile
                 var matrix = Viewport.MatrixForTile(tile);
-
-                matrix = matrix.PreConcat(SKMatrix.CreateScale(1 / tileScale, 1 / tileScale));
 
                 canvas.SetMatrix(matrix);
 
@@ -145,7 +134,7 @@ namespace VTMap.View
                 var text = $"Tile {tile.Col}/{tile.Row}/{tile.Level}";
                 var width = paintText.MeasureText(text);
 
-                canvas.DrawText(text, width / 2, Viewport.TileSize / 16, paintText); // 0.1 / Viewport.Scale), paintText);
+                canvas.DrawText(text, width / 2, Viewport.TileSize / 16, paintText);
                 canvas.DrawText(text, width / 2, Viewport.TileSize - Viewport.TileSize / 64, paintText);
                 canvas.DrawText(text, Viewport.TileSize - width / 2, Viewport.TileSize / 16, paintText);
                 canvas.DrawText(text, Viewport.TileSize - width / 2, Viewport.TileSize - Viewport.TileSize / 64, paintText);
@@ -161,10 +150,9 @@ namespace VTMap.View
                 _drawing = false;
         }
 
-        void OnSizeChanged(object sender, EventArgs e)
+        void InternalSizeChanged(float width, float height)
         {
-            Viewport.PixelDensity = GetPixelDensity();
-            Viewport.SizeChanged(Width, Height);
+            Viewport.SizeChanged(width, height);
         }
 
         private void OnViewportChanged(object sender, PropertyChangedEventArgs e)

@@ -1,5 +1,4 @@
-﻿using SkiaSharp;
-using SkiaSharp.Views.Forms;
+﻿using SkiaSharp.Views.Forms;
 using System;
 using VTMap.Core.Events;
 using VTMap.View.Forms.Extensions;
@@ -7,12 +6,14 @@ using Xamarin.Forms;
 
 namespace VTMap.View
 {
-    public partial class VTMapView : RelativeLayout
+    public partial class VTMapView : ContentView //RelativeLayout
     {
-        public static bool UseGPU = true;
+        public static bool UseGPU = false;
 
-        SKGLView glView;
-        SKCanvasView canView;
+        SKGLView _glView;
+        SKCanvasView _canvasView;
+        bool _sizeChanged = false;
+        Action _invalidate;
 
         public VTMapView()
         {
@@ -20,36 +21,36 @@ namespace VTMap.View
 
             if (UseGPU)
             {
-                glView = new SKGLView();
-                glView.HasRenderLoop = true;
+                // Use GPU backend
+                _glView = new SKGLView();
+                _glView.HasRenderLoop = true;
                 // Events
-                glView.EnableTouchEvents = true;
-                glView.Touch += OnTouch;
-                glView.PaintSurface += OnGLPaintSurface;
+                _glView.EnableTouchEvents = true;
+                _glView.Touch += OnTouch;
+                _glView.PaintSurface += OnGLPaintSurface;
+                _invalidate = () => _glView.InvalidateSurface();
             }
             else
             {
-                canView = new SKCanvasView();
+                // Use CPU backend
+                _canvasView = new SKCanvasView();
                 // Events
-                canView.EnableTouchEvents = true;
-                canView.Touch += OnTouch;
-                canView.PaintSurface += OnPaintSurface;
+                _canvasView.EnableTouchEvents = true;
+                _canvasView.Touch += OnTouch;
+                _canvasView.PaintSurface += OnPaintSurface;
+                _invalidate = () => _canvasView.InvalidateSurface();
             }
 
             Xamarin.Forms.View view;
 
             if (UseGPU)
-                view = glView;
+                view = _glView;
             else
-                view = canView;
+                view = _canvasView;
 
             view.SizeChanged += OnSizeChanged;
 
-            Children.Add(view,
-                Constraint.Constant(0),
-                Constraint.Constant(0),
-                Constraint.RelativeToParent((parent) => parent.Width),
-                Constraint.RelativeToParent((parent) => parent.Height));
+            Content = view;
 
             InternalInit();
         }
@@ -66,6 +67,12 @@ namespace VTMap.View
 
         void OnGLPaintSurface(object sender, SKPaintGLSurfaceEventArgs args)
         {
+            if (_sizeChanged)
+            {
+                _sizeChanged = false;
+                InternalSizeChanged(_glView.CanvasSize.Width, _glView.CanvasSize.Height);
+            }
+
             var canvas = args.Surface.Canvas;
 
             Draw(canvas);
@@ -73,37 +80,33 @@ namespace VTMap.View
 
         void OnPaintSurface(object sender, SKPaintSurfaceEventArgs args)
         {
+            if (_sizeChanged)
+            {
+                _sizeChanged = false;
+                InternalSizeChanged(_canvasView.CanvasSize.Width, _canvasView.CanvasSize.Height);
+            }
+
             var canvas = args.Surface.Canvas;
 
             Draw(canvas);
+        }
+
+        void OnSizeChanged(object sender, EventArgs e)
+        {
+            _sizeChanged = true;
         }
 
         void Invalidate()
         {
             RunOnMainThread(() =>
             {
-                if (UseGPU)
-                    glView.InvalidateSurface();
-                else
-                    canView.InvalidateSurface();
+                _invalidate();
             });
         }
 
         void RunOnMainThread(Action action)
         {
             Device.BeginInvokeOnMainThread(() => action());
-        }
-
-        SKSize GetCanvasSize()
-        {
-            return UseGPU == true ? glView.CanvasSize : canView.CanvasSize;
-        }
-        float GetPixelDensity()
-        {
-            if (Width <= 0) 
-                return 0;
-
-            return (float)(UseGPU == true ? glView.CanvasSize.Width / Width : canView.CanvasSize.Width / Width);
         }
     }
 }
