@@ -7,6 +7,7 @@ namespace VTMap.Core.Layers
     public class Layer : INotifyPropertyChanged
     {
         bool enabled = true;
+        protected IRenderer _renderer = null;
 
         public bool Enabled
         {
@@ -24,11 +25,9 @@ namespace VTMap.Core.Layers
             }
         }
 
-        public IRenderer renderer = null;
+        public bool HasRenderer => _renderer != null;
 
-        public bool HasRenderer => renderer != null;
-
-        public IRenderer Renderer => renderer;
+        public IRenderer Renderer { get => _renderer; }
 
         public event PropertyChangedEventHandler PropertyChanged;
 

@@ -2,6 +2,6 @@
 {
     public interface IRenderer
     {
-        void Draw(object canvas);
+        void Draw(object canvas, object viewport);
     }
 }

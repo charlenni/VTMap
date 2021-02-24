@@ -1,4 +1,5 @@
 ﻿using System;
+using VTMap.View.Layers;
 using Xamarin.Forms;
 
 namespace VTMap.App
@@ -10,6 +11,9 @@ namespace VTMap.App
         public MainPage()
         {
             InitializeComponent();
+
+            mapView.Map.Layers.Add(new CrossLayer());
+            mapView.Map.Layers.Add(new TileIdLayer());
 
             mapView.Viewport.PropertyChanged += (s,e) => {
                 Device.BeginInvokeOnMainThread(() =>

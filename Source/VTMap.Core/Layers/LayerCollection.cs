@@ -14,16 +14,16 @@ namespace VTMap.Core.Layers
     /// </summary>
     public class LayerCollection
     {
-        readonly MapData map;
-        readonly SynchronizedCollection<Layer> layers;
-        List<Layer> reverseLayers;
-        List<IRenderer> renderers;
-        bool changed = false;
+        readonly MapData _map;
+        readonly SynchronizedCollection<Layer> _layers;
+        List<Layer> _reverseLayers;
+        List<IRenderer> _renderers;
+        bool changed = true;
 
         public LayerCollection(MapData owner)
         {
-            map = owner;
-            layers = new SynchronizedCollection<Layer>();
+            _map = owner;
+            _layers = new SynchronizedCollection<Layer>();
         }
 
         public List<IRenderer> Renderers
@@ -33,38 +33,38 @@ namespace VTMap.Core.Layers
                 if (changed)
                     Update();
 
-                return renderers;
+                return _renderers;
             }
         }
 
         public void Add(Layer layer)
         {
-            Add(layer, layers.Count - 1);
+            Add(layer, _layers.Count - 1);
         }
 
         public void Add(Layer layer, int index = -1)
         {
-            if (layers.Contains(layer))
+            if (_layers.Contains(layer))
                 throw new ArgumentException("Layer added twice");
 
             if (layer is IUpdatedEventHandler)
-                map.Updated += ((IUpdatedEventHandler)layer).OnUpdated;
+                _map.Updated += ((IUpdatedEventHandler)layer).OnUpdated;
             //if (layer is IGestureEventHandler)
             //    map.GestureDetected += ((IGestureEventHandler)layer).OnGestureDetected;
 
             layer.PropertyChanged += OnLayerChanged;
 
             if (index == -1)
-                index = layers.Count;
+                index = _layers.Count;
 
-            layers.Insert(index, layer);
+            _layers.Insert(index, layer);
 
             changed = true;
         }
 
         public void Remove(Layer layer)
         {
-            if (!layers.Contains(layer))
+            if (!_layers.Contains(layer))
                 throw new ArgumentException("Unknown layer");
 
             changed = true;
@@ -72,14 +72,14 @@ namespace VTMap.Core.Layers
             layer.PropertyChanged -= OnLayerChanged;
 
             if (layer is IUpdatedEventHandler)
-                map.Updated -= ((IUpdatedEventHandler)layer).OnUpdated;
+                _map.Updated -= ((IUpdatedEventHandler)layer).OnUpdated;
 
-            layers.Remove(layer);
+            _layers.Remove(layer);
         }
 
         public void RemoveItem(int index)
         {
-            var item = layers[index];
+            var item = _layers[index];
 
             if (item == null)
                 throw new ArgumentException("Unknown index");
@@ -97,8 +97,8 @@ namespace VTMap.Core.Layers
         {
             try
             {
-                reverseLayers = layers.Where((i) => i.Enabled && i.HasRenderer).Reverse().ToList();
-                renderers = layers.Where((i) => i.Enabled && i.HasRenderer).Select((i) => i.Renderer).ToList();
+                _reverseLayers = _layers.Where((i) => i.Enabled && i.HasRenderer).Reverse().ToList() ?? new List<Layer>();
+                _renderers = _layers.Where((i) => i.Enabled && i.HasRenderer).Select((i) => i.Renderer).ToList() ?? new List<IRenderer>();
 
                 changed = false;
             }

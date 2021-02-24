@@ -10,6 +10,8 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\SKPointExtension.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Layers\TileIdLayer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Layers\CrossLayer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Navigator.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Viewport.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)VTMapView.cs" />

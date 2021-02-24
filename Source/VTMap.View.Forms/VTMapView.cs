@@ -8,7 +8,7 @@ namespace VTMap.View
 {
     public partial class VTMapView : ContentView //RelativeLayout
     {
-        public static bool UseGPU = false;
+        public static bool UseGPU = true;
 
         SKGLView _glView;
         SKCanvasView _canvasView;
@@ -28,7 +28,7 @@ namespace VTMap.View
                 _glView.EnableTouchEvents = true;
                 _glView.Touch += OnTouch;
                 _glView.PaintSurface += OnGLPaintSurface;
-                _invalidate = () => _glView.InvalidateSurface();
+                _invalidate = () => { _glView.InvalidateSurface(); };
             }
             else
             {
@@ -38,7 +38,7 @@ namespace VTMap.View
                 _canvasView.EnableTouchEvents = true;
                 _canvasView.Touch += OnTouch;
                 _canvasView.PaintSurface += OnPaintSurface;
-                _invalidate = () => _canvasView.InvalidateSurface();
+                _invalidate = () => { _canvasView.InvalidateSurface(); };
             }
 
             Xamarin.Forms.View view;
