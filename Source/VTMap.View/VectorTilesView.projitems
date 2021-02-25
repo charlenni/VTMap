@@ -13,6 +13,13 @@
     <Compile Include="$(MSBuildThisFileDirectory)Layers\TileIdLayer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Layers\CrossLayer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Navigator.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Overlays\ScaleBar\ImperialUnitConverter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Overlays\ScaleBar\IUnitConverter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Overlays\ScaleBar\MetricUnitConverter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Overlays\ScaleBar\NauticalUnitConverter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Overlays\ScaleBar\ScaleBarMode.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Overlays\ScaleBar\ScaleBarOverlay.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Overlays\ScaleBar\ScaleBarOverlayRenderer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Viewport.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)VTMapView.cs" />
   </ItemGroup>

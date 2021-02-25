@@ -1,5 +1,6 @@
 ﻿using System;
 using VTMap.View.Layers;
+using VTMap.View.Overlays.ScaleBar;
 using Xamarin.Forms;
 
 namespace VTMap.App
@@ -13,7 +14,10 @@ namespace VTMap.App
             InitializeComponent();
 
             mapView.Map.Layers.Add(new CrossLayer());
-            mapView.Map.Layers.Add(new TileIdLayer());
+            var tileIdLayer = new TileIdLayer();
+            mapView.Map.Layers.Add(tileIdLayer);
+            var scaleBarLayer = new ScaleBarOverlay(tileIdLayer) { SecondaryUnitConverter = ImperialUnitConverter.Instance, ScaleBarMode = ScaleBarMode.Both, ShowBoundingBox = true, };
+            mapView.Map.Overlays.Add(scaleBarLayer);
 
             mapView.Viewport.PropertyChanged += (s,e) => {
                 Device.BeginInvokeOnMainThread(() =>

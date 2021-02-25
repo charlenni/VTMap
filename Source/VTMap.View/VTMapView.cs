@@ -76,6 +76,9 @@ namespace VTMap.View
                 foreach (var renderer in Map.Layers.Renderers)
                     renderer.Draw(canvas, Viewport);
 
+                foreach (var renderer in Map.Overlays.Renderers)
+                    renderer.Draw(canvas, Viewport);
+
                 NeedsRedraw = false;
 
                 _drawing = false;

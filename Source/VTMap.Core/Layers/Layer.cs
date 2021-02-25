@@ -1,33 +1,53 @@
 ﻿using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using VTMap.Core.Interfaces;
+using VTMap.Core.Projections;
 
 namespace VTMap.Core.Layers
 {
     public class Layer : INotifyPropertyChanged
     {
-        bool enabled = true;
-        protected IRenderer _renderer = null;
+        IProjection _projection = new EPSG3857Projection();
 
-        public bool Enabled
+        public IProjection Projection
         {
             get
             {
-                return enabled;
+                return _projection;
             }
             set
             {
-                if (enabled != value)
+                if (_projection != value)
                 {
-                    enabled = value;
+                    _projection = value;
                     OnPropertyChanged();
                 }
             }
         }
 
-        public bool HasRenderer => _renderer != null;
+        bool _enabled = true;
+
+        public bool Enabled
+        {
+            get
+            {
+                return _enabled;
+            }
+            set
+            {
+                if (_enabled != value)
+                {
+                    _enabled = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        protected IRenderer _renderer = null;
 
         public IRenderer Renderer { get => _renderer; }
+
+        public bool HasRenderer => _renderer != null;
 
         public event PropertyChangedEventHandler PropertyChanged;
 

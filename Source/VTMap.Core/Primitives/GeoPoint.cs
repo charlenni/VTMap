@@ -1,5 +1,6 @@
 ﻿using System;
 using VTMap.Core.Extensions;
+using VTMap.Core.Interfaces;
 using VTMap.Core.Projections;
 
 namespace VTMap.Core
@@ -9,6 +10,11 @@ namespace VTMap.Core
     /// </summary>
     public class GeoPoint
     {
+        /// <summary>
+        /// Use EPSG3857 as default projection for this class
+        /// </summary>
+        IProjection _projection = new EPSG3857Projection();
+
         /// <summary>
         /// Conversion factor from degrees to microdegrees
         /// </summary>
@@ -73,8 +79,8 @@ namespace VTMap.Core
         /// <param name="lon">Longitude of new GeoPoint in degrees</param>
         public GeoPoint(float lat, float lon)
         {
-            Latitude = Math.Max(Math.Min(lat, MercatorProjection.LatitudeMax), MercatorProjection.LatitudeMin);
-            Longitude = Math.Max(Math.Min(lon, MercatorProjection.LongitudeMax), MercatorProjection.LongitudeMin);
+            Latitude = Math.Max(Math.Min(lat, EPSG3857Projection.LatitudeMax), EPSG3857Projection.LatitudeMin);
+            Longitude = Math.Max(Math.Min(lon, EPSG3857Projection.LongitudeMax), EPSG3857Projection.LongitudeMin);
         }
 
         /// <summary>
@@ -203,8 +209,8 @@ namespace VTMap.Core
 
         public void Project(Point point)
         {
-            point.X = MercatorProjection.LongitudeToX(Longitude);
-            point.Y = MercatorProjection.LatitudeToY(Latitude);
+            point.X = _projection.LongitudeToX(Longitude);
+            point.Y = _projection.LatitudeToY(Latitude);
         }
 
         /// <summary>

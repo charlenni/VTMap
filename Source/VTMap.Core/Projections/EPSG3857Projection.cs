@@ -1,12 +1,10 @@
 ﻿using System;
+using VTMap.Core.Interfaces;
 
 namespace VTMap.Core.Projections
 {
-    public class MercatorProjection
+    public class EPSG3857Projection : IProjection
     {
-        // The circumference of the earth at the equator in meters
-        public static readonly float EarthCircumference = 40075016.686f;
-
         // Maximum possible latitude coordinate of the map
         public static readonly float LatitudeMax = 85.05112877980659f;
 
@@ -24,7 +22,7 @@ namespace VTMap.Core.Projections
         /// </summary>
         /// <param name="latitude">Latitude coordinate that should be converted</param>
         /// <returns>View position in range [-1:+1]</returns>
-        public static float LongitudeToX(float longitude)
+        public float LongitudeToX(float longitude)
         {
             return longitude / 180.0f;
         }
@@ -34,7 +32,7 @@ namespace VTMap.Core.Projections
         /// </summary>
         /// <param name="longitude">Longitude coordinate that should be converted</param>
         /// <returns>View position in range [-1:+1]</returns>
-        public static float LatitudeToY(float latitude)
+        public float LatitudeToY(float latitude)
         {
             double sinLatitude = Math.Sin(latitude * (Math.PI / 180));
 
@@ -46,7 +44,7 @@ namespace VTMap.Core.Projections
         /// </summary>
         /// <param name="latitude">Latitude value which should be limited</param>
         /// <returns>Given latitude value, limited to the possible latitude range</returns>
-        public static float LimitLatitude(float latitude)
+        public float LimitLatitude(float latitude)
         {
             return (float)Math.Max(Math.Min(latitude, LatitudeMax), LatitudeMin);
         }
@@ -56,7 +54,7 @@ namespace VTMap.Core.Projections
         /// </summary>
         /// <param name="longitude">Longitude value which should be limited</param>
         /// <returns>Given longitude value, limited to the possible longitude range</returns>
-        public static float LimitLongitude(float longitude)
+        public float LimitLongitude(float longitude)
         {
             return (float)Math.Max(Math.Min(longitude, LongitudeMax), LongitudeMin);
         }
@@ -66,7 +64,7 @@ namespace VTMap.Core.Projections
         /// </summary>
         /// <param name="y">y the view position <see cref="ViewPosition.Y"/></param>
         /// <returns>Latitude in degrees</returns>
-        public static float ToLatitude(float y)
+        public float YToLatitude(float y)
         {
             return 90f - 360f * (float)(Math.Atan(Math.Exp(y * (2 * Math.PI))) / Math.PI);
         }
@@ -76,7 +74,7 @@ namespace VTMap.Core.Projections
         /// </summary>
         /// <param name="x">x the view position <see cref="ViewPosition.X"/></param>
         /// <returns>Longitude in degrees</returns>
-        public static float ToLongitude(float x)
+        public float XToLongitude(float x)
         {
             return 180.0f * x;
         }

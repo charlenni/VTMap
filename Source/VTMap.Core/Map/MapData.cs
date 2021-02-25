@@ -13,12 +13,14 @@ namespace VTMap.Core.Map
         /// Layers for this map
         /// </summary>
         public LayerCollection Layers { get; set; }
+        public LayerCollection Overlays { get; set; }
 
         public EventHandler<UpdateEventArgs> Updated;
 
         public MapData()
         {
             Layers = new LayerCollection(this);
+            Overlays = new LayerCollection(this);
         }
 
         public void MapDataUpdate(UpdateEventArgs args)

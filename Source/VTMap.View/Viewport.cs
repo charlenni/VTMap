@@ -197,22 +197,6 @@ namespace VTMap.View
             }
         }
 
-        public float Latitude
-        {
-            get
-            {
-                return MercatorProjection.ToLatitude(_center.Y);
-            }
-        }
-
-        public float Longitude
-        {
-            get
-            {
-                return MercatorProjection.ToLongitude(_center.X);
-            }
-        }
-
         // Get the minimal axis-aligned BoundingBox that encloses
         // the visible part of the map. Sets box to map coordinates:
         // xmin,ymin,xmax,ymax
@@ -296,7 +280,7 @@ namespace VTMap.View
        
         public override string ToString()
         {
-            return $"[Center={Center.X}/{Center.Y},Z={ZoomLevel},Lat={MercatorProjection.ToLatitude(Center.Y)}/Lon={MercatorProjection.ToLongitude(Center.X)}]";
+            return $"[Center={Center.X}/{Center.Y},Z={ZoomLevel}]";
         }
 
         public void SizeChanged(double width, double height)
@@ -310,26 +294,6 @@ namespace VTMap.View
             OnPropertyChanged("Size");
         }
 
-        internal void SetCenter(GeoPoint geoPoint)
-        {
-            SetCenter(geoPoint.Latitude, geoPoint.Longitude);
-        }
-
-        /// <summary>
-        /// Set this view position to new coordinates
-        /// </summary>
-        /// <param name="latitude">Latitude of new view position</param>
-        /// <param name="longitude">Longitude of new view position</param>
-        internal void SetCenter(float latitude, float longitude)
-        {
-            latitude = MercatorProjection.LimitLatitude(latitude);
-            longitude = MercatorProjection.LimitLongitude(longitude);
-            _center.X = MercatorProjection.LongitudeToX(longitude);
-            _center.Y = MercatorProjection.LatitudeToY(latitude);
-
-            OnPropertyChanged("Center");
-        }
-
         internal void SetCenter(float x, float y, float scale, float rotation)
         {
             _center.X = x;
@@ -339,31 +303,6 @@ namespace VTMap.View
             _zoomLevel = MathExtensions.Log2((int)scale);
 
             OnPropertyChanged("Center");
-        }
-
-        internal void SetByBoundingBox(GeoBox bbox, int viewWidth, int viewHeight)
-        {
-            float minx = MercatorProjection.LongitudeToX(bbox.MinLongitude);
-            float miny = MercatorProjection.LatitudeToY(bbox.MaxLatitude);
-
-            float dx = Math.Abs(MercatorProjection.LongitudeToX(bbox.MaxLongitude) - minx);
-            float dy = Math.Abs(MercatorProjection.LatitudeToY(bbox.MinLatitude) - miny);
-            float zx = viewWidth / (dx * TileExtension.TileSize);
-            float zy = viewHeight / (dy * TileExtension.TileSize);
-
-            _scale = (float)Math.Min(zx, zy);
-            _zoomLevel = MathExtensions.Log2((int)_scale);
-            _center.X = minx + dx / 2;
-            _center.Y = miny + dy / 2;
-            _rotation = 0;
-
-            OnPropertyChanged();
-        }
-
-        public GeoPoint CenterAsGeoPoint()
-        {
-            return new GeoPoint(MercatorProjection.ToLatitude(_center.Y),
-                    MercatorProjection.ToLongitude(_center.X));
         }
 
         /// <summary>

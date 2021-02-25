@@ -5,10 +5,10 @@ namespace VTMap.Core
 {
     public class Box
     {
-        public float MinX;
-        public float MaxX;
-        public float MinY;
-        public float MaxY;
+        public float MinX = float.PositiveInfinity;
+        public float MaxX = float.NegativeInfinity;
+        public float MinY = float.PositiveInfinity;
+        public float MaxY = float.NegativeInfinity;
 
         /// <summary>
         /// Create a new box with given min/max coordinates and check, if they are right
@@ -188,19 +188,29 @@ namespace VTMap.Core
             MaxY += dy;
         }
 
-        /**
-         * Convert map coordinates to lat/lon.
-         */
-        public void Map2Mercator()
+        /// <summary>
+        /// Expand this box about d in both directions
+        /// </summary>
+        /// <param name="d">Expand about d in both directions</param>
+        public void Expand(float d)
         {
-            float minLon = MercatorProjection.ToLongitude(MinX);
-            float maxLon = MercatorProjection.ToLongitude(MaxX);
-            float minLat = MercatorProjection.ToLatitude(MaxY);
-            float maxLat = MercatorProjection.ToLatitude(MinY);
-            MinX = minLon;
-            MaxX = maxLon;
-            MinY = minLat;
-            MaxY = maxLat;
+            MinX -= d;
+            MaxX += d;
+            MinY -= d;
+            MaxY += d;
+        }
+
+        /// <summary>
+        /// Expand this box about dx and dy
+        /// </summary>
+        /// <param name="dx">Expand about dx in x direction</param>
+        /// <param name="dy">Expand about dy in y direction</param>
+        public void Expand(float dx, float dy)
+        {
+            MinX -= dx;
+            MaxX += dx;
+            MinY -= dy;
+            MaxY += dy;
         }
 
         /// <summary>

@@ -146,10 +146,10 @@ namespace VTMap.Core
                 return this;
             }
 
-            float minLat = Math.Max(MercatorProjection.LatitudeMin, Math.Min(MinLatitude, geoPoint.Latitude));
-            float minLon = Math.Max(MercatorProjection.LongitudeMin, Math.Min(MinLongitude, geoPoint.Longitude));
-            float maxLat = Math.Min(MercatorProjection.LatitudeMax, Math.Max(MaxLatitude, geoPoint.Latitude));
-            float maxLon = Math.Min(MercatorProjection.LongitudeMax, Math.Max(MaxLongitude, geoPoint.Longitude));
+            float minLat = Math.Max(EPSG3857Projection.LatitudeMin, Math.Min(MinLatitude, geoPoint.Latitude));
+            float minLon = Math.Max(EPSG3857Projection.LongitudeMin, Math.Min(MinLongitude, geoPoint.Longitude));
+            float maxLat = Math.Min(EPSG3857Projection.LatitudeMax, Math.Max(MaxLatitude, geoPoint.Latitude));
+            float maxLon = Math.Min(EPSG3857Projection.LongitudeMax, Math.Max(MaxLongitude, geoPoint.Longitude));
 
             return new GeoBox(minLat, minLon, maxLat, maxLon);
         }
@@ -171,10 +171,10 @@ namespace VTMap.Core
                 throw new ArgumentException("BoundingBox extend operation does not accept negative values");
             }
 
-            float minLat = Math.Max(MercatorProjection.LatitudeMin, MinLatitude - verticalExpansion);
-            float minLon = Math.Max(MercatorProjection.LongitudeMin, MinLongitude - horizontalExpansion);
-            float maxLat = Math.Min(MercatorProjection.LatitudeMax, MaxLatitude + verticalExpansion);
-            float maxLon = Math.Min(MercatorProjection.LongitudeMax, MaxLongitude + horizontalExpansion);
+            float minLat = Math.Max(EPSG3857Projection.LatitudeMin, MinLatitude - verticalExpansion);
+            float minLon = Math.Max(EPSG3857Projection.LongitudeMin, MinLongitude - horizontalExpansion);
+            float maxLat = Math.Min(EPSG3857Projection.LatitudeMax, MaxLatitude + verticalExpansion);
+            float maxLon = Math.Min(EPSG3857Projection.LongitudeMax, MaxLongitude + horizontalExpansion);
 
             return new GeoBox(minLat, minLon, maxLat, maxLon);
         }
@@ -198,10 +198,10 @@ namespace VTMap.Core
             float verticalExpansion = (LatitudeSpan * margin - LatitudeSpan) * 0.5f;
             float horizontalExpansion = (LongitudeSpan * margin - LongitudeSpan) * 0.5f;
 
-            float minLat = Math.Max(MercatorProjection.LatitudeMin, MinLatitude - verticalExpansion);
-            float minLon = Math.Max(MercatorProjection.LongitudeMin, MinLongitude - horizontalExpansion);
-            float maxLat = Math.Min(MercatorProjection.LatitudeMax, MaxLatitude + verticalExpansion);
-            float maxLon = Math.Min(MercatorProjection.LongitudeMax, MaxLongitude + horizontalExpansion);
+            float minLat = Math.Max(EPSG3857Projection.LatitudeMin, MinLatitude - verticalExpansion);
+            float minLon = Math.Max(EPSG3857Projection.LongitudeMin, MinLongitude - horizontalExpansion);
+            float maxLat = Math.Min(EPSG3857Projection.LatitudeMax, MaxLatitude + verticalExpansion);
+            float maxLon = Math.Min(EPSG3857Projection.LongitudeMax, MaxLongitude + horizontalExpansion);
 
             return new GeoBox(minLat, minLon, maxLat, maxLon);
         }
@@ -225,10 +225,10 @@ namespace VTMap.Core
             float verticalExpansion = GeoPoint.LatitudeDistance(meters);
             float horizontalExpansion = GeoPoint.LongitudeDistance(meters, Math.Max(Math.Abs(MinLatitude), Math.Abs(MaxLatitude)));
 
-            float minLat = Math.Max(MercatorProjection.LatitudeMin, MinLatitude - verticalExpansion);
-            float minLon = Math.Max(MercatorProjection.LongitudeMin, MinLongitude - horizontalExpansion);
-            float maxLat = Math.Min(MercatorProjection.LatitudeMax, MaxLatitude + verticalExpansion);
-            float maxLon = Math.Min(MercatorProjection.LongitudeMax, MaxLongitude + horizontalExpansion);
+            float minLat = Math.Max(EPSG3857Projection.LatitudeMin, MinLatitude - verticalExpansion);
+            float minLon = Math.Max(EPSG3857Projection.LongitudeMin, MinLongitude - horizontalExpansion);
+            float maxLat = Math.Min(EPSG3857Projection.LatitudeMax, MaxLatitude + verticalExpansion);
+            float maxLon = Math.Min(EPSG3857Projection.LongitudeMax, MaxLongitude + horizontalExpansion);
 
             return new GeoBox(minLat, minLon, maxLat, maxLon);
         }
