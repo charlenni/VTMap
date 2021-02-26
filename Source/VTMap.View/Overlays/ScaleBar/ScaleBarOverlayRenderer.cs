@@ -32,9 +32,12 @@ namespace VectorTilesView.Overlays.ScaleBar
 
             _paintScaleBar = CreateScaleBarPaint(SKPaintStyle.Fill);
             _paintScaleBarStroke = CreateScaleBarPaint(SKPaintStyle.Stroke);
-            _paintScaleBarBox = CreateTextPaint(SKPaintStyle.Stroke);
+            _paintScaleBarBox = CreateScaleBarPaint(SKPaintStyle.Stroke);
             _paintScaleText = CreateTextPaint(SKPaintStyle.Fill);
             _paintScaleTextStroke = CreateTextPaint(SKPaintStyle.Stroke);
+
+            _paintScaleBarBox.Color = SKColors.Red;
+            _paintScaleBarBox.StrokeWidth = 0;
 
             UpdatePaints();
         }
