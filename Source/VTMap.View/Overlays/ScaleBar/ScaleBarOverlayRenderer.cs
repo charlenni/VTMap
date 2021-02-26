@@ -17,12 +17,48 @@ namespace VectorTilesView.Overlays.ScaleBar
         SKPaint _paintScaleBar;
         SKPaint _paintScaleBarStroke;
         SKPaint _paintScaleText;
+        SKPaint _paintScaleBarBox;
         SKPaint _paintScaleTextStroke;
+        string _lastScaleBarText1;
+        string _lastScaleBarText2;
+        SKRect _textSize = SKRect.Empty;
+        SKRect _textSize1 = SKRect.Empty;
+        SKRect _textSize2 = SKRect.Empty;
 
         public ScaleBarOverlayRenderer(ScaleBarOverlay scaleBarOverlay, float layerOpacity)
         {
             _scaleBarOverlay = scaleBarOverlay;
             _opacity = (byte)(layerOpacity * 255);
+
+            _paintScaleBar = CreateScaleBarPaint(SKPaintStyle.Fill);
+            _paintScaleBarStroke = CreateScaleBarPaint(SKPaintStyle.Stroke);
+            _paintScaleBarBox = CreateTextPaint(SKPaintStyle.Stroke);
+            _paintScaleText = CreateTextPaint(SKPaintStyle.Fill);
+            _paintScaleTextStroke = CreateTextPaint(SKPaintStyle.Stroke);
+
+            UpdatePaints();
+        }
+
+        public void UpdatePaints()
+        {
+            // Update paints with new values
+            _paintScaleBar.Color = _scaleBarOverlay.TextColor.WithAlpha(_opacity);
+            _paintScaleBar.StrokeWidth = _scaleBarOverlay.StrokeWidth * _scaleBarOverlay.Scale;
+            _paintScaleBarStroke.Color = _scaleBarOverlay.HaloColor.WithAlpha(_opacity);
+            _paintScaleBarStroke.StrokeWidth = _scaleBarOverlay.StrokeWidthHalo * _scaleBarOverlay.Scale;
+            _paintScaleText.Color = _scaleBarOverlay.TextColor.WithAlpha(_opacity);
+            _paintScaleText.StrokeWidth = _scaleBarOverlay.StrokeWidth * _scaleBarOverlay.Scale;
+            _paintScaleText.Typeface = SKTypeface.FromFamilyName(_scaleBarOverlay.Font.Typeface.FamilyName,
+                SKFontStyleWeight.Bold, SKFontStyleWidth.Normal, SKFontStyleSlant.Upright);
+            _paintScaleText.TextSize = (float)_scaleBarOverlay.Font.Size * _scaleBarOverlay.Scale;
+            _paintScaleTextStroke.Color = _scaleBarOverlay.HaloColor.WithAlpha(_opacity);
+            _paintScaleTextStroke.StrokeWidth = _scaleBarOverlay.StrokeWidthHalo / 2 * _scaleBarOverlay.Scale;
+            _paintScaleTextStroke.Typeface = SKTypeface.FromFamilyName(_scaleBarOverlay.Font.Typeface.FamilyName,
+                SKFontStyleWeight.Bold, SKFontStyleWidth.Normal, SKFontStyleSlant.Upright);
+            _paintScaleTextStroke.TextSize = (float)_scaleBarOverlay.Font.Size * _scaleBarOverlay.Scale;
+
+            // Do this, because height of text changes sometimes (e.g. from 2 m to 1 m)
+            _paintScaleTextStroke.MeasureText("9999 m", ref _textSize);
         }
 
         public void Draw(object canvasObj, object viewportObj)
@@ -30,33 +66,8 @@ namespace VectorTilesView.Overlays.ScaleBar
             var canvas = (SKCanvas)canvasObj;
             var viewport = (Viewport)viewportObj;
 
-            if (!_scaleBarOverlay.CanTransform()) return;
-
-            // If this is the first time, we call this renderer, ...
-            if (_paintScaleBar == null)
-            {
-                // ... than create the paints
-                _paintScaleBar = CreateScaleBarPaint(SKPaintStyle.Fill);
-                _paintScaleBarStroke = CreateScaleBarPaint(SKPaintStyle.Stroke);
-                _paintScaleText = CreateTextPaint(SKPaintStyle.Fill);
-                _paintScaleTextStroke = CreateTextPaint(SKPaintStyle.Stroke);
-            }
-
-            // Update paints with new values
-            _paintScaleBar.Color = _scaleBarOverlay.TextColor.WithAlpha(_opacity);
-            _paintScaleBar.StrokeWidth = _scaleBarOverlay.StrokeWidth * _scaleBarOverlay.Scale;
-            _paintScaleBarStroke.Color = _scaleBarOverlay.Halo.WithAlpha(_opacity);
-            _paintScaleBarStroke.StrokeWidth = _scaleBarOverlay.StrokeWidthHalo * _scaleBarOverlay.Scale;
-            _paintScaleText.Color = _scaleBarOverlay.TextColor.WithAlpha(_opacity);
-            _paintScaleText.StrokeWidth = _scaleBarOverlay.StrokeWidth * _scaleBarOverlay.Scale;
-            _paintScaleText.Typeface = SKTypeface.FromFamilyName(_scaleBarOverlay.Font.Typeface.FamilyName,
-                SKFontStyleWeight.Bold, SKFontStyleWidth.Normal, SKFontStyleSlant.Upright);
-            _paintScaleText.TextSize = (float)_scaleBarOverlay.Font.Size * _scaleBarOverlay.Scale;
-            _paintScaleTextStroke.Color = _scaleBarOverlay.Halo.WithAlpha(_opacity);
-            _paintScaleTextStroke.StrokeWidth = _scaleBarOverlay.StrokeWidthHalo / 2 * _scaleBarOverlay.Scale;
-            _paintScaleTextStroke.Typeface = SKTypeface.FromFamilyName(_scaleBarOverlay.Font.Typeface.FamilyName,
-                SKFontStyleWeight.Bold, SKFontStyleWidth.Normal, SKFontStyleSlant.Upright);
-            _paintScaleTextStroke.TextSize = (float)_scaleBarOverlay.Font.Size * _scaleBarOverlay.Scale;
+            if (!_scaleBarOverlay.CanTransform()) 
+                return;
 
             float scaleBarLength1;
             string scaleBarText1;
@@ -65,13 +76,7 @@ namespace VectorTilesView.Overlays.ScaleBar
 
             (scaleBarLength1, scaleBarText1, scaleBarLength2, scaleBarText2) = GetScaleBarLengthAndText(viewport);
 
-            // Calc height of scale bar
-            SKRect textSize = SKRect.Empty;
-
-            // Do this, because height of text changes sometimes (e.g. from 2 m to 1 m)
-            _paintScaleTextStroke.MeasureText("9999 m", ref textSize);
-
-            var scaleBarHeight = textSize.Height + (_scaleBarOverlay.TickLength + _scaleBarOverlay.StrokeWidthHalo * 0.5f + _scaleBarOverlay.TextMargin) * _scaleBarOverlay.Scale;
+            var scaleBarHeight = _textSize.Height + (_scaleBarOverlay.TickLength + _scaleBarOverlay.StrokeWidthHalo * 0.5f + _scaleBarOverlay.TextMargin) * _scaleBarOverlay.Scale;
 
             if (_scaleBarOverlay.ScaleBarMode == ScaleBarMode.Both && _scaleBarOverlay.SecondaryUnitConverter != null)
             {
@@ -117,11 +122,12 @@ namespace VectorTilesView.Overlays.ScaleBar
             // Draw text
 
             // Calc text height
-            SKRect textSize1 = SKRect.Empty;
-            SKRect textSize2 = SKRect.Empty;
-
             scaleBarText1 = scaleBarText1 ?? string.Empty;
-            _paintScaleTextStroke.MeasureText(scaleBarText1, ref textSize1);
+            if (scaleBarText1 != _lastScaleBarText1)
+            {
+                _paintScaleTextStroke.MeasureText(scaleBarText1, ref _textSize1);
+                _lastScaleBarText1 = scaleBarText1;
+            }
 
             float posX1, posY1, posX2, posY2;
 
@@ -129,36 +135,42 @@ namespace VectorTilesView.Overlays.ScaleBar
             {
                 // Draw text of second unit converter
                 scaleBarText2 = scaleBarText2 ?? string.Empty;
-                _paintScaleTextStroke.MeasureText(scaleBarText2, ref textSize2);
+                if (scaleBarText2 != _lastScaleBarText2)
+                {
+                    _paintScaleTextStroke.MeasureText(scaleBarText2, ref _textSize2);
+                    _lastScaleBarText2 = scaleBarText2;
+                }
 
-                (posX1, posY1, posX2, posY2) = GetScaleBarTextPositions(viewport, textSize, textSize1, textSize2, _scaleBarOverlay.StrokeWidthHalo);
+                (posX1, posY1, posX2, posY2) = GetScaleBarTextPositions(viewport, _textSize, _textSize1, _textSize2, _scaleBarOverlay.StrokeWidthHalo);
 
-                canvas.DrawText(scaleBarText2, posX2, posY2 - textSize2.Top, _paintScaleTextStroke);
-                canvas.DrawText(scaleBarText2, posX2, posY2 - textSize2.Top, _paintScaleText);
+                // TODO: Save bitmaps of text in a dictionary and reuse them, because
+                // TODO: DrawText is time consuming.
+                // Draw text of second unit converter
+                canvas.DrawText(scaleBarText2, posX2, posY2 - _textSize2.Top, _paintScaleTextStroke);
+                canvas.DrawText(scaleBarText2, posX2, posY2 - _textSize2.Top, _paintScaleText);
 
-                boundingBox.Add(new Box(posX2, posY2, posX2 + textSize2.Width, posY2 + textSize2.Height));
+                boundingBox.Add(new Box(posX2, posY2, posX2 + _textSize2.Width, posY2 + _textSize2.Height));
             }
             else
             {
-                (posX1, posY1, _, _) = GetScaleBarTextPositions(viewport, textSize, textSize1, textSize2, _scaleBarOverlay.StrokeWidthHalo);
+                (posX1, posY1, _, _) = GetScaleBarTextPositions(viewport, _textSize, _textSize1, SKRect.Empty, _scaleBarOverlay.StrokeWidthHalo);
             }
 
+            // TODO: Save bitmaps of text in a dictionary and reuse them, because
+            // TODO: DrawText is time consuming.
             // Draw text of first unit converter
-            canvas.DrawText(scaleBarText1, posX1, posY1 - textSize1.Top, _paintScaleTextStroke);
-            canvas.DrawText(scaleBarText1, posX1, posY1 - textSize1.Top, _paintScaleText);
+            canvas.DrawText(scaleBarText1, posX1, posY1 - _textSize1.Top, _paintScaleTextStroke);
+            canvas.DrawText(scaleBarText1, posX1, posY1 - _textSize1.Top, _paintScaleText);
 
-            boundingBox.Add(new Box(posX1, posY1, posX1 + textSize1.Width, posY1 + textSize1.Height));
+            boundingBox.Add(new Box(posX1, posY1, posX1 + _textSize1.Width, posY1 + _textSize1.Height));
 
             _scaleBarOverlay.BoundingBox = boundingBox;
 
-            if (_scaleBarOverlay.ShowBoundingBox)
-            {
-                // Draw a rect around the scale bar for testing
-                var tempPaint = _paintScaleTextStroke;
-                tempPaint.StrokeWidth = 0;
-                tempPaint.Color = SKColors.Red;
-                canvas.DrawRect(new SKRect((float)boundingBox.MinX, (float)boundingBox.MinY, (float)boundingBox.MaxX, (float)boundingBox.MaxY), tempPaint);
-            }
+            if (!_scaleBarOverlay.ShowBoundingBox)
+                return;
+
+            // Draw a rect around the scale bar for testing
+            canvas.DrawRect(new SKRect(boundingBox.MinX, boundingBox.MinY, boundingBox.MaxX, boundingBox.MaxY), _paintScaleBarBox);
         }
 
         SKPaint CreateScaleBarPaint(SKPaintStyle style)

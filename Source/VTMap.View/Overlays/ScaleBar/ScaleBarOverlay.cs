@@ -2,6 +2,7 @@
 using SkiaSharp;
 using System;
 using System.ComponentModel;
+using System.Runtime.CompilerServices;
 using VectorTilesView.Overlays.ScaleBar;
 using VTMap.Core.Enums;
 using VTMap.Core.Layers;
@@ -135,7 +136,7 @@ namespace VTMap.View.Overlays.ScaleBar
         /// <summary>
         /// Halo color of scalebar and text, so that it is better visible
         /// </summary>
-        public SKColor Halo
+        public SKColor HaloColor
         {
             get => _haloColor;
             set
@@ -273,6 +274,15 @@ namespace VTMap.View.Overlays.ScaleBar
         /// Draw a rectangle around the scale bar for testing
         /// </summary>
         public bool ShowBoundingBox { get; set; }
+
+        protected override void OnPropertyChanged([CallerMemberName] string name = null)
+        {
+            if (name == nameof(TextColor) || name == nameof(HaloColor)
+                || name == nameof(StrokeWidth) || name == nameof(StrokeWidthHalo)
+                || name == nameof(Font))
+                ((ScaleBarOverlayRenderer)_renderer).UpdatePaints();
+            base.OnPropertyChanged(name);
+        }
 
         public bool CanTransform()
         {
