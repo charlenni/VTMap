@@ -73,9 +73,7 @@ namespace VTMap.View
                 InternalSizeChanged(_glView.CanvasSize.Width, _glView.CanvasSize.Height);
             }
 
-            var canvas = args.Surface.Canvas;
-
-            Draw(canvas);
+            Draw(args.Surface.Canvas);
         }
 
         void OnPaintSurface(object sender, SKPaintSurfaceEventArgs args)
@@ -86,9 +84,7 @@ namespace VTMap.View
                 InternalSizeChanged(_canvasView.CanvasSize.Width, _canvasView.CanvasSize.Height);
             }
 
-            var canvas = args.Surface.Canvas;
-
-            Draw(canvas);
+            Draw(args.Surface.Canvas);
         }
 
         void OnSizeChanged(object sender, EventArgs e)
