@@ -18,6 +18,8 @@ namespace VTMap.App
             mapView.Map.Layers.Add(tileIdLayer);
             var scaleBarLayer = new ScaleBarOverlay(tileIdLayer) { SecondaryUnitConverter = ImperialUnitConverter.Instance, ScaleBarMode = ScaleBarMode.Both, ShowBoundingBox = true, };
             mapView.Map.Overlays.Add(scaleBarLayer);
+            var demoLayer = new DemoLayer();
+            mapView.Map.Layers.Add(demoLayer);
 
             mapView.Viewport.PropertyChanged += (s,e) => {
                 Device.BeginInvokeOnMainThread(() =>
