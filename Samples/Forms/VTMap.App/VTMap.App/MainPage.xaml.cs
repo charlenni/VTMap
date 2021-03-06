@@ -38,19 +38,19 @@ namespace VTMap.App
 
             buttonCenter.Command = new Command(() =>
             {
-                mapView.Navigator.MoveTo(Core.Point.Zero, 2000);
-                mapView.Navigator.RotateTo(0f, null, 2000);
-                mapView.Navigator.ScaleTo(1f, null, 2000);
+                mapView.Navigator.MoveTo(new Core.Point(0, 0), 2000);
+                mapView.Navigator.RotateTo(0f, Core.Point.Empty, 2000);
+                mapView.Navigator.ScaleTo(1f, Core.Point.Empty, 2000);
             });
-            buttonRotate.Command = new Command(() => { mapView.Navigator.RotateTo(mapView.Viewport.Rotation+10, null, 1000); /*mapView.Viewport.Roll += 2;*/ });  // RotateMap());
-            buttonZoomIn.Command = new Command(() => mapView.Navigator.ScaleTo(mapView.Viewport.Scale * 2f, null, 1000));
-            buttonZoomOut.Command = new Command(() => mapView.Navigator.ScaleTo(mapView.Viewport.Scale / 2f, null, 1000));
+            buttonRotate.Command = new Command(() => { mapView.Navigator.RotateTo(mapView.Viewport.Rotation + 10, Core.Point.Empty, 1000); });
+            buttonZoomIn.Command = new Command(() => mapView.Navigator.ScaleTo(mapView.Viewport.Scale * 2f, Core.Point.Empty, 1000));
+            buttonZoomOut.Command = new Command(() => mapView.Navigator.ScaleTo(mapView.Viewport.Scale / 2f, Core.Point.Empty, 1000));
         }
 
         public void RotateMap()
         {
             var angle = mapView.Viewport.Rotation - 30; // -180.0f + 360.0f * (float)rand.NextDouble();
-            mapView.Navigator.RotateTo(angle, null, 300);
+            mapView.Navigator.RotateTo(angle, Core.Point.Empty, 300);
         }
     }
 }
