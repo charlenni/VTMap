@@ -12,6 +12,7 @@ namespace VTMap.View.Layers
         const int pinNum = 2000;
         Point[] points = new Point[pinNum];
         SKPicture[] pins = new SKPicture[pinNum];
+        float[] scales = new float[pinNum];
         Random rand = new Random();
 
         public DemoLayer()
@@ -21,6 +22,7 @@ namespace VTMap.View.Layers
             for (var i = 0; i < pinNum; i++)
             {
                 points[i] = new Point(-1 + rand.NextDouble() * 2, -1 + rand.NextDouble() * 2);
+                scales[i] = 0.5f + (float)rand.NextDouble();
 
                 var svg = new SKSvg();
                 var colorInHex = $"{rand.Next(0, 255):X2}{rand.Next(0, 255):X2}{rand.Next(0, 255):X2}";
@@ -42,10 +44,15 @@ namespace VTMap.View.Layers
             {
                 point = viewport.FromViewToScreen(points[i]);
              
-                skpoint.X = point.X - 18;
-                skpoint.Y = point.Y - 56;
+                skpoint.X = point.X - (pins[i].CullRect.Width * scales[i]) / 2;
+                skpoint.Y = point.Y - (pins[i].CullRect.Height * scales[i]);
 
+                canvas.Save();
+                canvas.Translate(skpoint.X, skpoint.Y);
+                canvas.Scale(scales[i]);
+                canvas.Translate(-skpoint.X, -skpoint.Y);
                 canvas.DrawPicture(pins[i], skpoint.X, skpoint.Y, paint);
+                canvas.Restore();
             }
         }
     }
