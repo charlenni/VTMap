@@ -96,7 +96,7 @@ namespace VTMap.View
         /// </summary>
         /// <param name="newRotation">Relative angle in degrees</param>
         /// <param name="pivotScreen">Screen point to use as center for rotation</param>
-        public void RotateBy(float degrees, Core.Point pivotScreen = null)
+        public void RotateBy(float degrees, Core.Point pivotScreen)
         {
             if (_rotateAnimation != null && _rotateAnimation.IsRunning)
                 _rotateAnimation.Stop(false);
@@ -121,7 +121,7 @@ namespace VTMap.View
         /// <param name="newRotation">New rotation angle in degrees</param>
         /// <param name="pivotScreen">Screen point to use as center for rotation</param>
         /// <param name="duration">Duration of animation in milliseconds</param>
-        public void RotateTo(float newRotation, Core.Point pivotScreen = null, long duration = 0)
+        public void RotateTo(float newRotation, Core.Point pivotScreen, long duration = 0)
         {
             if (_rotateAnimation != null && _rotateAnimation.IsRunning)
                 _rotateAnimation.Stop(false);
@@ -149,11 +149,11 @@ namespace VTMap.View
             _rotateAnimation.Start();
         }
 
-        void InternalRotateBy(float degrees, Core.Point pivotScreen = null)
+        void InternalRotateBy(float degrees, Core.Point pivotScreen)
         {
             _rotation -= degrees;
 
-            var pivotCenter = pivotScreen is null ? _viewport.Center : _viewport.FromScreenToView(pivotScreen); // - SKFontStyleWidth * _mapView(_viewport.ScreenToViewMatrix.MapPoint(new SKPoint(pivotScreen.X, pivotScreen.Y)).ToPoint();
+            var pivotCenter = !pivotScreen.IsDefined ? _viewport.Center : _viewport.FromScreenToView(pivotScreen);
             var newCenter = new Core.Point(0, 0);
             var cosRotation = Math.Cos(-degrees.ToRadians());
             var sinRotation = Math.Sin(-degrees.ToRadians());
@@ -167,7 +167,7 @@ namespace VTMap.View
             _rotation = _viewport.Rotation;
         }
 
-        public void ScaleBy(float scale, Core.Point pivotScreen = null)
+        public void ScaleBy(float scale, Core.Point pivotScreen)
         {
             if (_scaleAnimation != null && _scaleAnimation.IsRunning)
                 _scaleAnimation.Stop(false);
@@ -175,7 +175,7 @@ namespace VTMap.View
             InternalScaleBy(scale, pivotScreen);
         }
 
-        public void ScaleTo(float newScale, Core.Point pivotScreen = null, long duration = 0)
+        public void ScaleTo(float newScale, Core.Point pivotScreen, long duration = 0)
         {
             if (_scaleAnimation != null && _scaleAnimation.IsRunning)
                 _scaleAnimation.Stop(false);
@@ -203,10 +203,10 @@ namespace VTMap.View
             _scaleAnimation.Start();
         }
 
-        void InternalScaleBy(float scale, Core.Point pivotScreen = null)
+        void InternalScaleBy(float scale, Core.Point pivotScreen)
         {
             // Save pivot point in view coordinate system
-            var pivotView = pivotScreen is null ? _viewport.Center : _viewport.FromScreenToView(pivotScreen);
+            var pivotView = !pivotScreen.IsDefined ? _viewport.Center : _viewport.FromScreenToView(pivotScreen);
             var newCenter = pivotView + (_viewport.Center - pivotView) / scale;
             // Set new scale factor
             _viewport.Scale *= scale;
