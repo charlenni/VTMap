@@ -6,53 +6,63 @@ using Xamarin.Forms;
 
 namespace VTMap.View
 {
-    public partial class VTMapView : ContentView //RelativeLayout
+    public partial class VTMapView : ContentView
     {
         public static bool UseGPU = true;
 
         SKGLView _glView;
         SKCanvasView _canvasView;
-        bool _sizeChanged = false;
         Action _invalidate;
 
         public VTMapView()
         {
             TouchEventHandler = new TouchEventHandler();
 
+            Xamarin.Forms.View view;
+
             if (UseGPU)
             {
                 // Use GPU backend
-                _glView = new SKGLView();
-                _glView.HasRenderLoop = true;
+                _glView = new SKGLView
+                {
+                    HasRenderLoop = true,
+                    EnableTouchEvents = true,
+                };
                 // Events
-                _glView.EnableTouchEvents = true;
                 _glView.Touch += OnTouch;
                 _glView.PaintSurface += OnGLPaintSurface;
                 _invalidate = () => { _glView.InvalidateSurface(); };
+                view = _glView;
             }
             else
             {
                 // Use CPU backend
-                _canvasView = new SKCanvasView();
+                _canvasView = new SKCanvasView
+                {
+                    EnableTouchEvents = true,
+                };
                 // Events
-                _canvasView.EnableTouchEvents = true;
                 _canvasView.Touch += OnTouch;
                 _canvasView.PaintSurface += OnPaintSurface;
-                _invalidate = () => { _canvasView.InvalidateSurface(); };
-            }
-
-            Xamarin.Forms.View view;
-
-            if (UseGPU)
-                view = _glView;
-            else
+                _invalidate = () => { RunOnMainThread(() => _canvasView.InvalidateSurface()); };
                 view = _canvasView;
+            }
 
             view.SizeChanged += OnSizeChanged;
 
             Content = view;
 
             InternalInit();
+        }
+
+        void OnGLPaintSurface(object sender, SKPaintGLSurfaceEventArgs args)
+        {
+            Draw(args.Surface.Canvas);
+        }
+
+        void OnPaintSurface(object sender, SKPaintSurfaceEventArgs args)
+        {
+            Draw(args.Surface.Canvas);
         }
 
         void OnTouch(object sender, SKTouchEventArgs e)
@@ -65,39 +75,15 @@ namespace VTMap.View
             e.Handled = args.Handled;
         }
 
-        void OnGLPaintSurface(object sender, SKPaintGLSurfaceEventArgs args)
-        {
-            if (_sizeChanged)
-            {
-                _sizeChanged = false;
-                InternalSizeChanged(_glView.CanvasSize.Width, _glView.CanvasSize.Height);
-            }
-
-            Draw(args.Surface.Canvas);
-        }
-
-        void OnPaintSurface(object sender, SKPaintSurfaceEventArgs args)
-        {
-            if (_sizeChanged)
-            {
-                _sizeChanged = false;
-                InternalSizeChanged(_canvasView.CanvasSize.Width, _canvasView.CanvasSize.Height);
-            }
-
-            Draw(args.Surface.Canvas);
-        }
-
         void OnSizeChanged(object sender, EventArgs e)
         {
-            _sizeChanged = true;
+            var density = Xamarin.Essentials.DeviceDisplay.MainDisplayInfo.Density;
+            InternalSizeChanged((float)(Width * density), (float)(Height * density));
         }
 
         void Invalidate()
         {
-            RunOnMainThread(() =>
-            {
-                _invalidate();
-            });
+            _invalidate();
         }
 
         void RunOnMainThread(Action action)
