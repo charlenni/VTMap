@@ -36,7 +36,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\..\Source\VTMap.Common\VTMap.Common.csproj" />
     <ProjectReference Include="..\..\..\..\Source\VTMap.Core\VTMap.Core.csproj" />
+    <ProjectReference Include="..\..\..\..\Source\VTMap.MapboxGL\VTMap.MapboxGL.csproj" />
     <ProjectReference Include="..\..\..\..\Source\VTMap.View.Forms\VTMap.View.Forms.csproj" />
   </ItemGroup>
 </Project>

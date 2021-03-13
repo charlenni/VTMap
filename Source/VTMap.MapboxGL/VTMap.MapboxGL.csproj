@@ -13,8 +13,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Source\VTMap.Core\VTMap.Core.csproj" />
     <ProjectReference Include="..\VTMap.Common\VTMap.Common.csproj" />
+    <ProjectReference Include="..\VTMap.Core\VTMap.Core.csproj" />
   </ItemGroup>
 
 </Project>

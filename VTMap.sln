@@ -25,9 +25,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VTMap.App.iOS", "Samples\Fo
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VTMap.App.Mac", "Samples\Forms\VTMap.App\VTMap.App.Mac\VTMap.App.Mac.csproj", "{975B6BBD-CD89-4A69-8F42-3C999D9F4D99}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VTMap.MapboxGL", "VTMap.MapboxGL\VTMap.MapboxGL.csproj", "{8745D0BF-AB10-427F-8C22-B76BA01A88FC}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VTMap.MapboxGL", "Source\VTMap.MapboxGL\VTMap.MapboxGL.csproj", "{8745D0BF-AB10-427F-8C22-B76BA01A88FC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VTMap.Common", "VTMap.Common\VTMap.Common.csproj", "{7DE4008F-3324-407C-9517-891C9FAF4ACD}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VTMap.Common", "Source\VTMap.Common\VTMap.Common.csproj", "{7DE4008F-3324-407C-9517-891C9FAF4ACD}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution

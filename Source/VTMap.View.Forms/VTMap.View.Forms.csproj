@@ -15,9 +15,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\VTMap.Common\VTMap.Common.csproj" />
-    <ProjectReference Include="..\..\VTMap.MapboxGL\VTMap.MapboxGL.csproj" />
+    <ProjectReference Include="..\VTMap.Common\VTMap.Common.csproj" />
     <ProjectReference Include="..\VTMap.Core\VTMap.Core.csproj" />
+    <ProjectReference Include="..\VTMap.MapboxGL\VTMap.MapboxGL.csproj" />
   </ItemGroup>
 
 </Project>
