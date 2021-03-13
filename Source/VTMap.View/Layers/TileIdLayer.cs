@@ -9,7 +9,7 @@ namespace VTMap.View.Layers
     {
         public TileIdLayer()
         {
-            _renderer = this;    
+            _renderer = this;  
         }
 
         public SKColor BorderColor { get; set; } = SKColors.Red;

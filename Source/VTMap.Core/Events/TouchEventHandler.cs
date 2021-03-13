@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading;
 using VTMap.Core.Enums;
+using VTMap.Core.Primitives;
 using VTMap.Core.Utilities;
 
 namespace VTMap.Core.Events

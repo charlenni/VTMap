@@ -9,9 +9,11 @@
     <Import_RootNamespace>VectorTilesView</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="$(MSBuildThisFileDirectory)Extensions\SKPointExtension.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Layers\BackgroundLayer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Layers\DemoLayer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Layers\TileIdLayer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Layers\CrossLayer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Layers\VectorTileLayer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Navigator.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Overlays\ScaleBar\ImperialUnitConverter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Overlays\ScaleBar\IUnitConverter.cs" />

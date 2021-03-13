@@ -6,7 +6,7 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using VTMap.Core;
 using VTMap.Core.Extensions;
-using VTMap.Core.Projections;
+using VTMap.Core.Primitives;
 
 namespace VTMap.View
 {
@@ -268,7 +268,7 @@ namespace VTMap.View
         {
             var numberOfTiles = (float)Math.Pow(2, ZoomLevel);
             var scaleFactor = 2 * ZoomScale / TileScaleFactor;
-            var viewNW = new Core.Point(-1.0 + 2.0 * (tile.Col / numberOfTiles), -1.0 + 2.0 * (tile.Row / numberOfTiles));
+            var viewNW = new Point(-1.0 + 2.0 * (tile.Col / numberOfTiles), -1.0 + 2.0 * (tile.Row / numberOfTiles));
             var screenNW = FromViewToScreen(viewNW);
 
             var matrix = SKMatrix.CreateScale(scaleFactor, scaleFactor);

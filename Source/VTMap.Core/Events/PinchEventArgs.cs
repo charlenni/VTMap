@@ -1,5 +1,6 @@
 ﻿using System;
 using VTMap.Core.Enums;
+using VTMap.Core.Primitives;
 
 namespace VTMap.Core.Events
 {

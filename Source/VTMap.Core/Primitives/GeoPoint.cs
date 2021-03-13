@@ -3,7 +3,7 @@ using VTMap.Core.Extensions;
 using VTMap.Core.Interfaces;
 using VTMap.Core.Projections;
 
-namespace VTMap.Core
+namespace VTMap.Core.Primitives
 {
     /// <summary>
     /// A GeoPoint represents an immutable pair of latitude and longitude coordinates

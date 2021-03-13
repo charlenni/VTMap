@@ -1,9 +1,9 @@
 ﻿using SkiaSharp;
 using System;
-using VTMap.Core;
 using VTMap.Core.Enums;
 using VTMap.Core.Interfaces;
 using VTMap.Core.Layers;
+using VTMap.Core.Primitives;
 using VTMap.Core.Utilities;
 using VTMap.View;
 using VTMap.View.Overlays.ScaleBar;

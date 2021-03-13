@@ -1,15 +1,15 @@
 ﻿using SkiaSharp;
 using Svg.Skia;
 using System;
-using VTMap.Core;
 using VTMap.Core.Interfaces;
 using VTMap.Core.Layers;
+using VTMap.Core.Primitives;
 
 namespace VTMap.View.Layers
 {
     public class DemoLayer : Layer, IRenderer
     {
-        const int pinNum = 2000;
+        const int pinNum = 1000;
         Point[] points = new Point[pinNum];
         SKPicture[] pins = new SKPicture[pinNum];
         float[] scales = new float[pinNum];

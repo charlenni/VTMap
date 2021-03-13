@@ -70,7 +70,7 @@ namespace VTMap.View
 
                 if (lockTaken)
                 {
-                    canvas.Clear(SKColors.LightGray);
+                    canvas.Clear(SKColors.Gray);
 
                     foreach (var renderer in Map.Layers.Renderers)
                         renderer.Draw(canvas, Viewport);

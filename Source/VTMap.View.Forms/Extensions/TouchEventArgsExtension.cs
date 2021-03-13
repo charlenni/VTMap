@@ -1,7 +1,7 @@
 ﻿using SkiaSharp.Views.Forms;
-using VTMap.Core;
 using VTMap.Core.Enums;
 using VTMap.Core.Events;
+using VTMap.Core.Primitives;
 
 namespace VTMap.View.Forms.Extensions
 {

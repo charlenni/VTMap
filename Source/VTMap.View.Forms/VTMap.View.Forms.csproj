@@ -10,10 +10,13 @@
   <ItemGroup>
     <PackageReference Include="SkiaSharp.Views.Forms" Version="2.80.2" />
     <PackageReference Include="Svg.Skia" Version="0.5.0" />
+    <PackageReference Include="Xamarin.Essentials" Version="1.6.1" />
     <PackageReference Include="Xamarin.Forms" Version="5.0.0.2012" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\VTMap.Common\VTMap.Common.csproj" />
+    <ProjectReference Include="..\..\VTMap.MapboxGL\VTMap.MapboxGL.csproj" />
     <ProjectReference Include="..\VTMap.Core\VTMap.Core.csproj" />
   </ItemGroup>
 

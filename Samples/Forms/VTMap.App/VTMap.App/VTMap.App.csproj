@@ -11,6 +11,24 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="monaco.mbtiles" />
+    <None Remove="Styles\osm-liberty.json" />
+    <None Remove="Styles\Sprites\osm-liberty%402x.json" />
+    <None Remove="Styles\Sprites\osm-liberty%402x.png" />
+    <None Remove="Styles\Sprites\osm-liberty.json" />
+    <None Remove="Styles\Sprites\osm-liberty.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="monaco.mbtiles" />
+    <EmbeddedResource Include="Styles\osm-liberty.json" />
+    <EmbeddedResource Include="Styles\Sprites\osm-liberty.json" />
+    <EmbeddedResource Include="Styles\Sprites\osm-liberty.png" />
+    <EmbeddedResource Include="Styles\Sprites\osm-liberty@2x.json" />
+    <EmbeddedResource Include="Styles\Sprites\osm-liberty@2x.png" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Serilog" Version="2.10.0" />
     <PackageReference Include="Serilog.Sinks.Console" Version="3.1.1" />
     <PackageReference Include="Xamarin.Forms" Version="5.0.0.2012" />

@@ -1,7 +1,7 @@
 ﻿using System;
-using VTMap.Core.Projections;
+using VTMap.Core.Primitives;
 
-namespace VTMap.Core
+namespace VTMap.Core.Primitives
 {
     public class Box
     {

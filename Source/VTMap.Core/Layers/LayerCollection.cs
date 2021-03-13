@@ -39,7 +39,7 @@ namespace VTMap.Core.Layers
 
         public void Add(Layer layer)
         {
-            Add(layer, _layers.Count - 1);
+            Add(layer, -1);
         }
 
         public void Add(Layer layer, int index = -1)

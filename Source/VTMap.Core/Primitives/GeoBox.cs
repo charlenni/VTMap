@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using VTMap.Core.Primitives;
 using VTMap.Core.Projections;
 
 namespace VTMap.Core

@@ -1,4 +1,6 @@
-﻿namespace VTMap.Core.Events
+﻿using VTMap.Core.Primitives;
+
+namespace VTMap.Core.Events
 {
     public class TapEventArgs
     {

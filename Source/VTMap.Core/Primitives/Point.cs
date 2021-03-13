@@ -1,7 +1,7 @@
 ﻿using System.Diagnostics;
 using System.Globalization;
 
-namespace VTMap.Core
+namespace VTMap.Core.Primitives
 {
     [DebuggerDisplay("X={X}, Y={Y}")]
     public struct Point
