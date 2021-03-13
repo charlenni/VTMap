@@ -23,9 +23,7 @@ namespace VTMap.View
         // Timer for rendering loop
         Timer _timer;
 
-        bool _drawing = false;
         object _syncObject = new object();
-
         
         public MapData Map { get; set; }
         public Viewport Viewport { get; private set; }
@@ -64,24 +62,29 @@ namespace VTMap.View
 
         void Draw(SKCanvas canvas)
         {
-            if (_drawing)
-                return;
+            bool lockTaken = false;
 
-            lock (_syncObject)
+            try
             {
-                _drawing = true;
+                Monitor.TryEnter(_syncObject, ref lockTaken);
 
-                canvas.Clear(SKColors.LightGray);
+                if (lockTaken)
+                {
+                    canvas.Clear(SKColors.LightGray);
 
-                foreach (var renderer in Map.Layers.Renderers)
-                    renderer.Draw(canvas, Viewport);
+                    foreach (var renderer in Map.Layers.Renderers)
+                        renderer.Draw(canvas, Viewport);
 
-                foreach (var renderer in Map.Overlays.Renderers)
-                    renderer.Draw(canvas, Viewport);
+                    foreach (var renderer in Map.Overlays.Renderers)
+                        renderer.Draw(canvas, Viewport);
 
-                NeedsRedraw = false;
-
-                _drawing = false;
+                    NeedsRedraw = false;
+                }
+            }
+            finally
+            {
+                if (lockTaken)
+                    Monitor.Exit(_syncObject);
             }
         }
 
@@ -169,7 +172,7 @@ namespace VTMap.View
             if (_fpsCount == 20)
             {
                 fps = _fpsAverage / _fpsCount;
-                Debug.WriteLine($"FPS {fps.ToString("N3", CultureInfo.InvariantCulture)}");
+                //Debug.WriteLine($"FPS {fps.ToString("N3", CultureInfo.InvariantCulture)}");
 
                 _fpsCount = 0;
                 _fpsAverage = 0.0;
@@ -177,7 +180,11 @@ namespace VTMap.View
 
             // Called if needed
             if (redraw)
+            {
+                dt = _stopWatch.Elapsed.TotalMilliseconds;
                 Invalidate();
+                Debug.WriteLine($"Last draw needs {(_stopWatch.Elapsed.TotalMilliseconds-dt).ToString("N3", CultureInfo.InvariantCulture)} ms");
+            }
         }
     }
 }
