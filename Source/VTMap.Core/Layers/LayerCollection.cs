@@ -26,6 +26,11 @@ namespace VTMap.Core.Layers
             _layers = new SynchronizedCollection<Layer>();
         }
 
+        public Layer this[int index]
+        {
+            get => _layers[index];
+        }
+
         public List<IRenderer> Renderers
         {
             get
