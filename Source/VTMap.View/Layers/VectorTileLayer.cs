@@ -27,14 +27,10 @@ namespace VectorTilesView.Layers
 
             if (_source != null)
             {
-                canvas.Save();
-
                 foreach (var tile in viewport.Tiles.AsReadOnly())
                 {
                     // Get matrix for tile
                     var matrix = viewport.MatrixForTile(tile);
-
-                    canvas.SetMatrix(matrix);
 
                     var tileInfo = new TileInfo();
                     tileInfo.Index = new TileIndex(tile.Col, _source.Schema.YAxis == YAxis.TMS ? (1 << tile.Level) - tile.Row - 1 : tile.Row, tile.Level); ;
@@ -49,12 +45,13 @@ namespace VectorTilesView.Layers
 
                     if (drawable != null)
                     {
-                        //canvas.ClipRect(drawable.Bounds);
+                        canvas.Save();
+                        canvas.SetMatrix(matrix);
+                        canvas.ClipRect(drawable.Bounds);
                         canvas.DrawDrawable(drawable, 0, 0);
+                        canvas.Restore();
                     }
                 }
-
-                canvas.Restore();
 
                 return;
             }
