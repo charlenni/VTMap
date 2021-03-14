@@ -44,6 +44,9 @@ namespace VectorTilesView.Layers
 
                     var drawable = _cache[tileInfo.Index];
 
+                    drawable.Context.Zoom = viewport.ZoomLevel;
+                    drawable.Context.Scale = 1;
+
                     if (drawable != null)
                     {
                         //canvas.ClipRect(drawable.Bounds);
