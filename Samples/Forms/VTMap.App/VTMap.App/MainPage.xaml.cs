@@ -23,9 +23,9 @@ namespace VTMap.App
             LoadMapboxGL(Assembly.GetAssembly(GetType()), mapView.Map);
 
             mapView.Map.Layers.Add(new CrossLayer());
-            var tileIdLayer = new TileIdLayer();
-            mapView.Map.Layers.Add(tileIdLayer);
-            var scaleBarLayer = new ScaleBarOverlay(tileIdLayer) { SecondaryUnitConverter = ImperialUnitConverter.Instance, ScaleBarMode = ScaleBarMode.Both, ShowBoundingBox = true, };
+            //var tileIdLayer = new TileIdLayer();
+            //mapView.Map.Layers.Add(tileIdLayer);
+            var scaleBarLayer = new ScaleBarOverlay(mapView.Map.Layers[1]) { SecondaryUnitConverter = ImperialUnitConverter.Instance, ScaleBarMode = ScaleBarMode.Both, ShowBoundingBox = true, };
             mapView.Map.Overlays.Add(scaleBarLayer);
             //var demoLayer = new DemoLayer();
             //mapView.Map.Layers.Add(demoLayer);
